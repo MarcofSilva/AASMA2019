@@ -4,7 +4,9 @@ import javax.swing.border.AbstractBorder;
 import java.awt.*;
 
 public class BuildingBlock extends Block {
-    public BuildingBlock(Color color, AbstractBorder border){
-        super(color, border);
+    private static final Color buildingColor = Color.gray;
+
+    public BuildingBlock(){
+        super(buildingColor, new Board.ComplexBoarder(buildingColor, buildingColor, buildingColor, buildingColor));
     }
 }

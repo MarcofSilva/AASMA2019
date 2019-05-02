@@ -4,7 +4,9 @@ import javax.swing.border.AbstractBorder;
 import java.awt.*;
 
 public class RoadHBlock extends Block {
-    public RoadHBlock(Color color, AbstractBorder border){
-        super(color, border);
+    private static final Color BLACK = Color.black;
+    private static final Color WHITE = Color.white;
+    public RoadHBlock(){
+        super(BLACK, new Board.ComplexBoarder(WHITE, WHITE, BLACK, BLACK));
     }
 }

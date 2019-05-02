@@ -10,12 +10,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
-import javax.swing.JTextPane;
+import javax.swing.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 
 /**
@@ -29,7 +26,13 @@ public class GUI extends JFrame {
 	static JTextField speed;
 	static JPanel boardPanel;
 	static JButton run, reset, step;
+	static JSlider percentCars;
+	static JTextField nrCars;
 	private int nX, nY;
+
+	static final int CARS_MIN = 0;
+	static final int CARS_MAX = 100;
+	static final int CARS_INIT = 50;
 
 	public class Cell extends JPanel {
 
@@ -127,11 +130,23 @@ public class GUI extends JFrame {
 		JPanel panel = new JPanel();
 		panel.setSize(new Dimension(700,50));
 		panel.setLocation(new Point(0,0));
-		
+
 		step = new JButton("Step");
 		panel.add(step);
 		step.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
+				int nrCarsaux = -1;
+				try{
+					nrCarsaux = Integer.valueOf(nrCars.getText());
+				}catch (Exception e){
+					JTextPane output = new JTextPane();
+					output.setText("Please insert an integer value to set the number of cars\nValue inserted = "+nrCars.getText());
+					JOptionPane.showMessageDialog(null, output, "Error", JOptionPane.PLAIN_MESSAGE);
+				}
+				if(nrCarsaux > 0){
+					Board.notifyNumberCars(nrCarsaux);
+					Board.notifyPercent(percentCars.getValue());
+				}
 				if(run.getText().equals("Run")) Board.step();
 				else Board.stop();
 			}
@@ -149,6 +164,7 @@ public class GUI extends JFrame {
 			public void actionPerformed(ActionEvent arg0) {
 				if(run.getText().equals("Run")){
 					int time = -1;
+					int nrCarsaux = -1;
 					try {
 						time = Integer.valueOf(speed.getText());
 					} catch(Exception e){
@@ -156,9 +172,17 @@ public class GUI extends JFrame {
 						output.setText("Please insert an integer value to set the time per step\nValue inserted = "+speed.getText());
 						JOptionPane.showMessageDialog(null, output, "Error", JOptionPane.PLAIN_MESSAGE);
 					}
-					if(time>0){
+					try{
+						nrCarsaux = Integer.valueOf(nrCars.getText());
+					}catch (Exception e){
+						JTextPane output = new JTextPane();
+						output.setText("Please insert an integer value to set the number of cars\nValue inserted = "+nrCars.getText());
+						JOptionPane.showMessageDialog(null, output, "Error", JOptionPane.PLAIN_MESSAGE);
+					}
+					if(time>0 && nrCarsaux > 0){
+						Board.notifyNumberCars(nrCarsaux);
 						Board.run(time);
-	 					run.setText("Stop");						
+						run.setText("Stop");
 					}
  				} else {
 					Board.stop();
@@ -166,10 +190,29 @@ public class GUI extends JFrame {
  				}
 			}
 		});
-		speed = new JTextField(" time per step in [1,100]");
+		speed = new JTextField("time per step in [1,100]");
 		speed.setMargin(new Insets(5,5,5,5));
 		panel.add(speed);
-		
+
+		nrCars = new JTextField("Nr of Cars");
+		nrCars.setMargin(new Insets(5,5,5,5));
+		panel.add(nrCars);
+
+		percentCars = new JSlider(JSlider.HORIZONTAL, CARS_MIN, CARS_MAX, CARS_INIT);
+
+		percentCars.addChangeListener(new ChangeListener() {
+			public void stateChanged(ChangeEvent e) {
+				Board.notifyPercent(percentCars.getValue());
+			}
+		});
+
+		//Turn on labels at major tick marks.
+		percentCars.setMajorTickSpacing(25);
+		percentCars.setMinorTickSpacing(5);
+		percentCars.setPaintTicks(true);
+		percentCars.setPaintLabels(true);
+		panel.add(percentCars);
+
 		return panel;
 	}
 

@@ -1,9 +1,11 @@
 package pt.ulisboa.tecnico.aasma.a018;
 
+
 import java.awt.*;
-import java.util.ArrayList;
+import java.util.*;
 import java.util.List;
 
+import javax.swing.*;
 import javax.swing.border.AbstractBorder;
 
 public class Board {
@@ -12,22 +14,55 @@ public class Board {
 	private static final Color WHITE = Color.white;
 	private static final Color GRAY = Color.gray;
 
+	private static int autonomousCount;
+	private static int normalCount;
 
-	public static int nX = 30, nY = 30;
+	private static List<Point> spawnPoints = new ArrayList<>();
+	private static List<Point> deSpawnPoints = new ArrayList<>();
+	private static List<Car> carsToRemove = new ArrayList<>();
+
+	public static int nX = 30, nY = 30, nrCars, percentCars = 50;
 	private static Block[][] board;
 	private static Object[][] objects;
 	private static List<Car> cars;
 	private static List<TrafficLight> trafficLights;
 
+	public static void incAutonomous(){
+		autonomousCount++;
+	}
+	public static void incNormal(){
+		normalCount++;
+	}
 
+	public static void notifyPercent(int percent){
+		percentCars = percent;
+	}
+	public static void notifyNumberCars(int numberCars){
+		nrCars = numberCars;
+	}
+
+	private static void checkNumberOfCars(){
+		int missingCars = nrCars - cars.size();
+		if(missingCars > 0){
+			Collections.shuffle(spawnPoints);
+			for(int i = 0; i < missingCars && i < 8; i++){
+				if(autonomousCount < nrCars*(percentCars/100.0)){
+					spawnCar( new CarAutonomous(spawnPoints.get(i)));
+				}
+				else {
+					spawnCar( new CarNormal(spawnPoints.get(i)));
+				}
+			}
+		}
+	}
 	private static void buildHorizontalroad(int lane, int startPoint, int lenght){
 		for(int k = 0; k<2; k++){
 			for(int i = startPoint; i<startPoint + lenght; i++){
-				board[i][lane+k] = new RoadHBlock(BLACK, new ComplexBoarder(WHITE, WHITE, BLACK, BLACK));
+				board[i][lane+k] = new RoadHBlock();
 			}
 		}
-
 	}
+
 	private static void buildVerticalroad(int lane, int startPoint, int lenght){
 		for(int k = 0; k<2; k++){
 			for(int j = startPoint; j<startPoint + lenght; j++){
@@ -35,7 +70,7 @@ public class Board {
 					board[lane+k][j] = new RoadIntersectBlock(BLACK, new ComplexBoarder(BLACK, BLACK, BLACK, BLACK));
 				}
 				else {
-					board[lane+k][j] = new RoadVBlock(BLACK, new ComplexBoarder(BLACK, BLACK, WHITE, WHITE));
+					board[lane+k][j] = new RoadVBlock();
 				}
 			}
 		}
@@ -76,14 +111,18 @@ public class Board {
 	}
 
 	private static void createTrafficLights(Point leftDown) {
-		trafficLights.add(new TrafficLight(leftDown,5,2,3,Color.green));
-		trafficLights.add(new TrafficLight(new Point(leftDown.x,leftDown.y + 3),5,2,3,Color.red));
-		trafficLights.add(new TrafficLight(new Point(leftDown.x + 3,leftDown.y),5,2,3,Color.red));
-		trafficLights.add(new TrafficLight(new Point(leftDown.x + 3,leftDown.y + 3),5,2,3,Color.green));
+		createTrafficLight(new TrafficLight(leftDown,5,2,3,Color.green));
+		createTrafficLight(new TrafficLight(new Point(leftDown.x,leftDown.y + 3),5,2,3,Color.red));
+		createTrafficLight(new TrafficLight(new Point(leftDown.x + 3,leftDown.y),5,2,3,Color.red));
+		createTrafficLight(new TrafficLight(new Point(leftDown.x + 3,leftDown.y + 3),5,2,3,Color.green));
 	}
 
-	public static void initialize() {
-		board = new Block[nX][nY];
+	public static void createTrafficLight(TrafficLight tl){
+		trafficLights.add(tl);
+		objects[tl.point.x][tl.point.y] = tl;
+	}
+
+	private static void initializeMap(){
 		//Change here the map's layout
 		//Horizontal lanes
 		buildHorizontalroad(4, 0, 23);
@@ -108,38 +147,51 @@ public class Board {
 		board[7][15] = new RoadIntersectBlock(BLACK, new ComplexBoarder(BLACK, BLACK, WHITE, BLACK));
 		board[7][16] = new RoadIntersectBlock(BLACK, new ComplexBoarder(BLACK, BLACK, WHITE, BLACK));
 
-		Color buildingColor = Color.gray;
 		for(int i=0; i<nX; i++){
 			for(int j=0; j<nY; j++)
 				if(board[i][j] == null){
-					board[i][j] = new BuildingBlock(buildingColor, new ComplexBoarder(buildingColor, buildingColor, buildingColor, buildingColor));
+					board[i][j] = new BuildingBlock();
 				}
 		}
-
-		cars = new ArrayList<>();
-
-		cars.add(new CarNormal(new Point(0,4),0));
-		cars.add(new CarAutonomous(new Point(4,4),0));
-		cars.add(new CarNormal(new Point(26,9), 180));
-		cars.add(new CarAutonomous(new Point(29,9), 180));
-		cars.add(new CarNormal(new Point(8,0),270));
-		cars.add(new CarAutonomous(new Point(8,4),270));
-		cars.add(new CarNormal(new Point(7,26), 90));
-		cars.add(new CarAutonomous(new Point(7,29), 90));
-
-		trafficLights = new ArrayList<>();
+	}
+	private static void initiateObjects(){
 		createTrafficLights(new Point(22, 22));
-
 		createTrafficLights(new Point(6, 22));
 		createTrafficLights(new Point(6, 3));
 
+	}
+
+	private static void initializeLists(){
+		spawnPoints.add(new Point(0,4));
+		spawnPoints.add(new Point(0, 23));
+		spawnPoints.add(new Point( 7, 29));
+		spawnPoints.add(new Point( 23, 29));
+		spawnPoints.add(new Point( 29, 24));
+		spawnPoints.add(new Point( 29, 9));
+		spawnPoints.add(new Point( 24, 0));
+		spawnPoints.add(new Point( 8, 0));
+
+		//idk the utility of these but they are here anyway
+		deSpawnPoints.add(new Point( 0, 5));
+		deSpawnPoints.add(new Point( 0, 24));
+		deSpawnPoints.add(new Point( 8, 29));
+		deSpawnPoints.add(new Point( 24, 29));
+		deSpawnPoints.add(new Point( 29, 23));
+		deSpawnPoints.add(new Point( 29, 8));
+		deSpawnPoints.add(new Point( 23, 0));
+		deSpawnPoints.add(new Point( 7, 0));
+	}
+
+	public static void initialize() {
+		initializeLists();
+		autonomousCount = 0;
+		normalCount = 0;
+		board = new Block[nX][nY];
+		initializeMap();
 		objects = new Object[nX][nY];
-		for(Car car : cars) {
-			objects[car.point.x][car.point.y]= car;
-		}
-		for(TrafficLight traficlight : trafficLights) {
-			objects[traficlight.point.x][traficlight.point.y]= traficlight;
-		}
+		cars = new ArrayList<>();
+		trafficLights = new ArrayList<>();
+		initiateObjects();
 
 	}
 	
@@ -223,6 +275,8 @@ public class Board {
 		for(Car a : cars){
 			a.agentDecision();
 		}
+		removeCars();
+		checkNumberOfCars();
 		displayObjects();
 		GUI.update();
 	}
@@ -241,7 +295,31 @@ public class Board {
 		for(TrafficLight tf : trafficLights) GUI.removeObject(tf);
 		for(Car car : cars) GUI.removeObject(car);
 	}
-	
+
+	private static void removeCars(){
+		for(Car car : carsToRemove){
+			objects[car.point.x][car.point.y] = null;
+			cars.remove(car);
+		}
+		carsToRemove.clear();
+
+	}
+	public static void removeCar(Car car){
+		carsToRemove.add(car);
+		if(car instanceof CarAutonomous){
+			autonomousCount--;
+
+		}
+		else {
+			normalCount--;
+
+		}
+	}
+	public static void spawnCar(Car car){
+		cars.add(car);
+		objects[car.point.x][car.point.y] = car;
+	}
+
 	public static void associateGUI(GUI graphicalInterface) {
 		GUI = graphicalInterface;
 	}

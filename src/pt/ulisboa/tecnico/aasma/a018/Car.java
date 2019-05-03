@@ -16,6 +16,7 @@ public abstract class Car extends Object {
 
 	public Color color;
 	protected Random random;
+	protected int totalTicks, totalStepsGiven;
 
 	public Car(Point point, int direction, Color color){
 		super(color, point);
@@ -45,6 +46,9 @@ public abstract class Car extends Object {
 	/**** B: sensors ****/
 	/********************/
 
+	protected int getStepsStopped(){
+		return totalTicks - totalStepsGiven;
+	}
 	protected boolean isGreen(Point point){
 		TrafficLight tf = (TrafficLight) Board.getObject(point);
 		if(tf != null) {
@@ -80,11 +84,6 @@ public abstract class Car extends Object {
 	/**** C: actuators ****/
 	/**********************/
 
-	/* Rotate agent to right */
-	public void rotateRandomly() {
-		if(random.nextBoolean()) rotateLeft();
-		else rotateRight();
-	}
 	
 	/* Rotate agent to right */
 	public void rotateRight() {
@@ -97,10 +96,7 @@ public abstract class Car extends Object {
 	}
 	
 	/* Move agent forward */
-	public void stay(){
-
-	}
-
+	abstract void stay();
 	abstract void agentDecision();
 
 	

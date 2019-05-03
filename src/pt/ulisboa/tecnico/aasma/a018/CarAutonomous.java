@@ -20,11 +20,17 @@ public class CarAutonomous extends Car {
         Board.incAutonomous();
     }
 
+    @Override
+    void stay(){
+
+    }
+
     /**********************
      **** A: decision *****
      **********************/
 
     public void agentDecision() {
+        this.totalTicks++;
         ahead = aheadPosition();
         if(!isRoad(ahead)){
 
@@ -39,10 +45,10 @@ public class CarAutonomous extends Car {
                     default: trafficLightLocal.x++;
                 }
                 if(!isGreen(trafficLightLocal)){
-
+                    stay();
                 }
                 else if(!Board.isEmpty(ahead)){
-
+                    stay();
                 }
                 else {
                     moveAhead(ahead);
@@ -139,10 +145,10 @@ public class CarAutonomous extends Car {
                 default: trafficLightLocal.x++;
             }
             if(!isGreen(trafficLightLocal)){
-
+                stay();
             }
             else if(!Board.isEmpty(ahead)){
-
+                stay();
             }
             else {
                 moveAhead(ahead);
@@ -187,6 +193,7 @@ public class CarAutonomous extends Car {
 
     public void moveAhead(Point ahead) {
         Board.updateEntityPosition(point,ahead);
+        this.totalStepsGiven++;
         this.point = ahead;
     }
 

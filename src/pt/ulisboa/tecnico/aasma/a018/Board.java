@@ -20,7 +20,8 @@ public class Board {
 	private static List<Point> deSpawnPoints = new ArrayList<>();
 	private static List<Car> carsToRemove = new ArrayList<>();
 
-	public static int nX = 30, nY = 30, nrCars, percentCars = 50;
+	public static int nX = 30, nY = 30, nrCars, totalCarCounter, percentCars = 50;
+	public static double median = 0.0;
 	private static Block[][] board;
 	private static Object[][] objects;
 	private static List<Car> cars;
@@ -219,6 +220,8 @@ public class Board {
 		initializeLists();
 		autonomousCount = 0;
 		normalCount = 0;
+		median = 0.0;
+		totalCarCounter = 0;
 		board = new Block[nX][nY];
 		initializeMap();
 		intersections = new Intersection[nX][nY];
@@ -341,17 +344,16 @@ public class Board {
 			cars.remove(car);
 		}
 		carsToRemove.clear();
-
 	}
 	public static void removeCar(Car car){
+        median = (median*totalCarCounter + car.getStepsStopped())/(totalCarCounter+1);
+	    totalCarCounter++;
 		carsToRemove.add(car);
 		if(car instanceof CarAutonomous){
 			autonomousCount--;
-
 		}
 		else {
 			normalCount--;
-
 		}
 	}
 	public static void spawnCar(Car car){

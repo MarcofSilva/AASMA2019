@@ -1,11 +1,6 @@
 package pt.ulisboa.tecnico.aasma.a018;
 
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.Graphics;
-import java.awt.GridLayout;
-import java.awt.Insets;
-import java.awt.Point;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
@@ -13,6 +8,7 @@ import java.util.List;
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import javax.swing.text.JTextComponent;
 
 
 /**
@@ -29,6 +25,7 @@ public class GUI extends JFrame {
 	static JSlider percentCars;
 	static JTextField nrCars;
 	private int nX, nY;
+	static JTextArea mediantext, median;
 
 	static final int CARS_MIN = 0;
 	static final int CARS_MAX = 100;
@@ -56,7 +53,6 @@ public class GUI extends JFrame {
 						default : g.fillPolygon(new int[]{5, 9, 21, 26, 26, 5}, new int[]{15, 5, 5, 15, 26 ,26}, 6); break;
 					}
 				}
-
 			}
         }
 	}
@@ -122,13 +118,14 @@ public class GUI extends JFrame {
 	}
 
 	public void update() {
+		median.setText(String.format("%.2f",Board.median));
 		repaint();
 	}
 
 
 	private Component createButtonPanel() {
 		JPanel panel = new JPanel();
-		panel.setSize(new Dimension(700,50));
+		panel.setSize(new Dimension(900,50));
 		panel.setLocation(new Point(0,0));
 
 		step = new JButton("Step");
@@ -213,6 +210,10 @@ public class GUI extends JFrame {
 		percentCars.setPaintLabels(true);
 		panel.add(percentCars);
 
+		mediantext = new JTextArea("Average steps stopped");
+		median = new JTextArea("yo");
+		panel.add(mediantext);
+		panel.add(median);
 		return panel;
 	}
 

@@ -7,6 +7,7 @@ import java.util.List;
 public class CarNormal extends Car {
     private Point ahead;
     private Point pathAhead;
+    private boolean delay = false;
 
     private List<Point> path = new ArrayList<>();
 
@@ -18,11 +19,18 @@ public class CarNormal extends Car {
         super(point, Color.MAGENTA);
         Board.incNormal();
     }
+
+    @Override
+    void stay(){
+        delay = true;
+    }
+
     /**********************
      **** A: decision *****
      **********************/
 
     public void agentDecision() {
+        this.totalTicks++;
         ahead = aheadPosition();
         if(!isRoad(ahead)){
 
@@ -37,12 +45,16 @@ public class CarNormal extends Car {
                     default: trafficLightLocal.x++;
                 }
                 if(!isGreen(trafficLightLocal)){
-
+                    stay();
                 }
                 else if(!Board.isEmpty(ahead)){
-
+                    stay();
                 }
                 else {
+                    if(delay){
+                        delay = false;
+                        return;
+                    }
                     moveAhead(ahead);
                     path.remove(0);
                 }
@@ -52,6 +64,10 @@ public class CarNormal extends Car {
                 if(!comparePoints(ahead, pathAhead)){
                     if(direction == 270){
                         if(pathAhead.y != point.y){
+                            if(delay){
+                                delay = false;
+                                return;
+                            }
                             moveAhead(ahead);
                             path.remove(0);
                         }
@@ -66,6 +82,10 @@ public class CarNormal extends Car {
                     }
                     else if(direction == 90){
                         if(pathAhead.y != point.y){
+                            if(delay){
+                                delay = false;
+                                return;
+                            }
                             moveAhead(ahead);
                             path.remove(0);
                         }
@@ -80,6 +100,10 @@ public class CarNormal extends Car {
                     }
                     else if(direction == 0){
                         if(pathAhead.x != point.x){
+                            if(delay){
+                                delay = false;
+                                return;
+                            }
                             moveAhead(ahead);
                             path.remove(0);
                         }
@@ -94,6 +118,10 @@ public class CarNormal extends Car {
                     }
                     else {
                         if(pathAhead.x != point.x){
+                            if(delay){
+                                delay = false;
+                                return;
+                            }
                             moveAhead(ahead);
                             path.remove(0);
                         }
@@ -114,6 +142,10 @@ public class CarNormal extends Car {
                     }
 
                     else {
+                        if(delay){
+                            delay = false;
+                            return;
+                        }
                         moveAhead(ahead);
                         path.remove(0);
                     }
@@ -137,12 +169,16 @@ public class CarNormal extends Car {
                 default: trafficLightLocal.x++;
             }
             if(!isGreen(trafficLightLocal)){
-
+                stay();
             }
             else if(!Board.isEmpty(ahead)){
-
+                stay();
             }
             else {
+                if(delay){
+                    delay = false;
+                    return;
+                }
                 moveAhead(ahead);
                 path.remove(0);
             }
@@ -154,8 +190,14 @@ public class CarNormal extends Car {
                         rotateLeft();
                     else {
                         if (!Board.isEmpty(ahead)) ;
-                        else
+                        else{
+                            if(delay){
+                                delay = false;
+                                return;
+                            }
                             moveAhead(ahead);
+                        }
+
                     }
                     break;
                 case "right":
@@ -163,14 +205,26 @@ public class CarNormal extends Car {
                         rotateRight();
                     else {
                         if(!Board.isEmpty(ahead));
-                        else
+                        else{
+                            if(delay){
+                                delay = false;
+                                return;
+                            }
                             moveAhead(ahead);
+                        }
+
                     }
                     break;
                 case "continue":
                     if(!Board.isEmpty(ahead));
-                    else
+                    else{
+                        if(delay){
+                            delay = false;
+                            return;
+                        }
                         moveAhead(ahead);
+                    }
+
                     break;
             }
         }
@@ -179,12 +233,17 @@ public class CarNormal extends Car {
         }
 
         else {
+            if(delay){
+                delay = false;
+                return;
+            }
             moveAhead(ahead);
         }
     }
 
     public void moveAhead(Point ahead) {
         Board.updateEntityPosition(point,ahead);
+        this.totalStepsGiven++;
         this.point = ahead;
     }
 
@@ -194,6 +253,4 @@ public class CarNormal extends Car {
         }
         return p1.y == p2.y;
     }
-
-
 }

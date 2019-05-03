@@ -73,10 +73,7 @@ public abstract class Car extends Object {
 			Board.removeCar(this);
 			return false;
 		}
-		if(Board.getBlock(ahead).getColor() == Color.black){
-			return true;
-		}
-		return false;
+		return true;
 	}
 
 	/**********************/

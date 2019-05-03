@@ -5,7 +5,6 @@ import java.awt.*;
 import java.util.*;
 import java.util.List;
 
-import javax.swing.*;
 import javax.swing.border.AbstractBorder;
 
 public class Board {
@@ -26,6 +25,7 @@ public class Board {
 	private static Object[][] objects;
 	private static List<Car> cars;
 	private static List<TrafficLight> trafficLights;
+	private static Intersection[][] intersections;
 
 	public static void incAutonomous(){
 		autonomousCount++;
@@ -111,10 +111,10 @@ public class Board {
 	}
 
 	private static void createTrafficLights(Point leftDown) {
-		createTrafficLight(new TrafficLight(leftDown,5,2,3,Color.green));
-		createTrafficLight(new TrafficLight(new Point(leftDown.x,leftDown.y + 3),5,2,3,Color.red));
-		createTrafficLight(new TrafficLight(new Point(leftDown.x + 3,leftDown.y),5,2,3,Color.red));
-		createTrafficLight(new TrafficLight(new Point(leftDown.x + 3,leftDown.y + 3),5,2,3,Color.green));
+		createTrafficLight(new TrafficLight(leftDown,10,2,4,Color.green));
+		createTrafficLight(new TrafficLight(new Point(leftDown.x,leftDown.y + 3),10,2,4,Color.red));
+		createTrafficLight(new TrafficLight(new Point(leftDown.x + 3,leftDown.y),10,2,4,Color.red));
+		createTrafficLight(new TrafficLight(new Point(leftDown.x + 3,leftDown.y + 3),10,2,4,Color.green));
 	}
 
 	public static void createTrafficLight(TrafficLight tl){
@@ -182,12 +182,47 @@ public class Board {
 		deSpawnPoints.add(new Point( 7, 0));
 	}
 
+	private static void initializeIntersections(){
+		//3 way
+		intersections[8][14] = new Intersection(new Point(8,14),270, Arrays.asList(new String[]{"F", "R"}));
+		intersections[7][17] = new Intersection(new Point(7,17),90, Arrays.asList(new String[]{"F", "L"}));
+		intersections[9][16] = new Intersection(new Point(9,16),180, Arrays.asList(new String[]{"R", "L"}));
+
+
+		// 3 way
+		intersections[22][8] = new Intersection(new Point(22,8),0, Arrays.asList(new String[]{"F", "L"}));
+		intersections[23][10] = new Intersection(new Point(23,10),90, Arrays.asList(new String[]{"R", "L"}));
+		intersections[25][9] = new Intersection(new Point(25,9),180, Arrays.asList(new String[]{"F", "R"}));
+
+
+		//4 way
+		intersections[6][4] = new Intersection(new Point(6,4),0, Arrays.asList(new String[]{"F", "R", "L"}));
+		intersections[7][6] = new Intersection(new Point(7,6),90, Arrays.asList(new String[]{"F", "R", "L"}));
+		intersections[8][3] = new Intersection(new Point(8,3),270, Arrays.asList(new String[]{"F", "R", "L"}));
+		intersections[9][5] = new Intersection(new Point(9,5),180, Arrays.asList(new String[]{"F", "R", "L"}));
+
+		//4 way
+		intersections[6][23] = new Intersection(new Point(6,23),0, Arrays.asList(new String[]{"F", "R", "L"}));
+		intersections[7][25] = new Intersection(new Point(7,25),90, Arrays.asList(new String[]{"F", "R", "L"}));
+		intersections[8][22] = new Intersection(new Point(8,22),270, Arrays.asList(new String[]{"F", "R", "L"}));
+		intersections[9][24] = new Intersection(new Point(9,24),180, Arrays.asList(new String[]{"F", "R", "L"}));
+
+		//4 way
+		intersections[22][23] = new Intersection(new Point(22,23),0, Arrays.asList(new String[]{"F", "R", "L"}));
+		intersections[23][25] = new Intersection(new Point(23,25),90, Arrays.asList(new String[]{"F", "R", "L"}));
+		intersections[24][22] = new Intersection(new Point(24,22),270, Arrays.asList(new String[]{"F", "R", "L"}));
+		intersections[25][24] = new Intersection(new Point(25,24),180, Arrays.asList(new String[]{"F", "R", "L"}));
+
+
+	}
 	public static void initialize() {
 		initializeLists();
 		autonomousCount = 0;
 		normalCount = 0;
 		board = new Block[nX][nY];
 		initializeMap();
+		intersections = new Intersection[nX][nY];
+		initializeIntersections();
 		objects = new Object[nX][nY];
 		cars = new ArrayList<>();
 		trafficLights = new ArrayList<>();
@@ -198,6 +233,10 @@ public class Board {
 	/****************************
 	 ***** B: BOARD METHODS *****
 	 ****************************/
+
+	public static Intersection getIntersection(Point point){
+		return intersections[point.x][point.y];
+	}
 	public static Object getObject(Point point) {
 		return objects[point.x][point.y];
 	}

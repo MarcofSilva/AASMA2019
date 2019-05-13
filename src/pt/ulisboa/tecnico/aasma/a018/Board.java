@@ -1,6 +1,8 @@
 package pt.ulisboa.tecnico.aasma.a018;
 
 
+import org.omg.CORBA.PUBLIC_MEMBER;
+
 import java.awt.*;
 import java.util.*;
 import java.util.List;
@@ -19,7 +21,9 @@ public class Board {
 	private static List<Point> spawnPoints = new ArrayList<>();
 	private static List<Point> deSpawnPoints = new ArrayList<>();
 	private static List<Car> carsToRemove = new ArrayList<>();
+	private static List<IntersectionManager> intersectManagers = new ArrayList<>();
 
+	private static boolean TRAFFICLIGHTS = true;
 	public static int nX = 30, nY = 30, nrCars, totalCarCounter, percentCars = 50;
 	public static double median = 0.0;
 	private static Block[][] board;
@@ -46,6 +50,7 @@ public class Board {
 		int missingCars = nrCars - cars.size();
 		if(missingCars > 0){
 			Collections.shuffle(spawnPoints);
+			//TODO
 			for(int i = 0; i < missingCars && i < 8; i++){
 				if(autonomousCount < nrCars*(percentCars/100.0)){
 					spawnCar( new CarAutonomous(spawnPoints.get(i)));
@@ -112,10 +117,10 @@ public class Board {
 	}
 
 	private static void createTrafficLights(Point leftDown) {
-		createTrafficLight(new TrafficLight(leftDown,10,2,4,Color.green));
-		createTrafficLight(new TrafficLight(new Point(leftDown.x,leftDown.y + 3),10,2,4,Color.red));
-		createTrafficLight(new TrafficLight(new Point(leftDown.x + 3,leftDown.y),10,2,4,Color.red));
-		createTrafficLight(new TrafficLight(new Point(leftDown.x + 3,leftDown.y + 3),10,2,4,Color.green));
+		createTrafficLight(new TrafficLight(leftDown,17,2,5,Color.green));
+		createTrafficLight(new TrafficLight(new Point(leftDown.x,leftDown.y + 3),17,2,5,Color.red));
+		createTrafficLight(new TrafficLight(new Point(leftDown.x + 3,leftDown.y),17,2,5,Color.red));
+		createTrafficLight(new TrafficLight(new Point(leftDown.x + 3,leftDown.y + 3),17,2,5,Color.green));
 	}
 
 	public static void createTrafficLight(TrafficLight tl){
@@ -144,6 +149,7 @@ public class Board {
 
 		//Martelada para dar cover de uma intersecao de tres saidas
 		board[23][8] = new RoadIntersectBlock(BLACK, new ComplexBoarder(BLACK, WHITE, BLACK, BLACK));
+		board[23][8] = new RoadIntersectBlock(BLACK, new ComplexBoarder(BLACK, WHITE, BLACK, BLACK));
 		board[24][8] = new RoadIntersectBlock(BLACK, new ComplexBoarder(BLACK, WHITE, BLACK, BLACK));
 		board[7][15] = new RoadIntersectBlock(BLACK, new ComplexBoarder(BLACK, BLACK, WHITE, BLACK));
 		board[7][16] = new RoadIntersectBlock(BLACK, new ComplexBoarder(BLACK, BLACK, WHITE, BLACK));
@@ -163,15 +169,16 @@ public class Board {
 	}
 
 	private static void initializeLists(){
-		spawnPoints.add(new Point(0,4));
+		spawnPoints = new ArrayList<>();
 		spawnPoints.add(new Point(0, 23));
 		spawnPoints.add(new Point( 7, 29));
+		spawnPoints.add(new Point(0,4));
 		spawnPoints.add(new Point( 23, 29));
 		spawnPoints.add(new Point( 29, 24));
 		spawnPoints.add(new Point( 29, 9));
 		spawnPoints.add(new Point( 24, 0));
 		spawnPoints.add(new Point( 8, 0));
-
+/*
 		//idk the utility of these but they are here anyway
 		deSpawnPoints.add(new Point( 0, 5));
 		deSpawnPoints.add(new Point( 0, 24));
@@ -180,42 +187,49 @@ public class Board {
 		deSpawnPoints.add(new Point( 29, 23));
 		deSpawnPoints.add(new Point( 29, 8));
 		deSpawnPoints.add(new Point( 23, 0));
-		deSpawnPoints.add(new Point( 7, 0));
+		deSpawnPoints.add(new Point( 7, 0));*/
 	}
 
 	private static void initializeIntersections(){
 		//3 way
-		intersections[8][14] = new Intersection(new Point(8,14),270, Arrays.asList(new String[]{"F", "R"}));
-		intersections[7][17] = new Intersection(new Point(7,17),90, Arrays.asList(new String[]{"F", "L"}));
-		intersections[9][16] = new Intersection(new Point(9,16),180, Arrays.asList(new String[]{"R", "L"}));
-
+		IntersectionManager manager = new IntersectionManager();
+		intersections[8][14] = new Intersection(new Point(8,14),270, Arrays.asList(new String[]{"F", "R"}),manager,false);
+		intersections[7][17] = new Intersection(new Point(7,17),90, Arrays.asList(new String[]{"F", "L"}),manager,false);
+		intersections[9][16] = new Intersection(new Point(9,16),180, Arrays.asList(new String[]{"R", "L"}),manager, false);
+		intersectManagers.add(manager);
 
 		// 3 way
-		intersections[22][8] = new Intersection(new Point(22,8),0, Arrays.asList(new String[]{"F", "L"}));
-		intersections[23][10] = new Intersection(new Point(23,10),90, Arrays.asList(new String[]{"R", "L"}));
-		intersections[25][9] = new Intersection(new Point(25,9),180, Arrays.asList(new String[]{"F", "R"}));
-
-
-		//4 way
-		intersections[6][4] = new Intersection(new Point(6,4),0, Arrays.asList(new String[]{"F", "R", "L"}));
-		intersections[7][6] = new Intersection(new Point(7,6),90, Arrays.asList(new String[]{"F", "R", "L"}));
-		intersections[8][3] = new Intersection(new Point(8,3),270, Arrays.asList(new String[]{"F", "R", "L"}));
-		intersections[9][5] = new Intersection(new Point(9,5),180, Arrays.asList(new String[]{"F", "R", "L"}));
+		manager = new IntersectionManager();
+		intersections[22][8] = new Intersection(new Point(22,8),0, Arrays.asList(new String[]{"F", "L"}),manager, false);
+		intersections[23][10] = new Intersection(new Point(23,10),90, Arrays.asList(new String[]{"R", "L"}),manager, false);
+		intersections[25][9] = new Intersection(new Point(25,9),180, Arrays.asList(new String[]{"F", "R"}),manager, false);
+		intersectManagers.add(manager);
 
 		//4 way
-		intersections[6][23] = new Intersection(new Point(6,23),0, Arrays.asList(new String[]{"F", "R", "L"}));
-		intersections[7][25] = new Intersection(new Point(7,25),90, Arrays.asList(new String[]{"F", "R", "L"}));
-		intersections[8][22] = new Intersection(new Point(8,22),270, Arrays.asList(new String[]{"F", "R", "L"}));
-		intersections[9][24] = new Intersection(new Point(9,24),180, Arrays.asList(new String[]{"F", "R", "L"}));
+		manager = new IntersectionManager();
+		intersections[6][4] = new Intersection(new Point(6,4),0, Arrays.asList(new String[]{"F", "R", "L"}),manager, TRAFFICLIGHTS);
+		intersections[7][6] = new Intersection(new Point(7,6),90, Arrays.asList(new String[]{"F", "R", "L"}),manager, TRAFFICLIGHTS);
+		intersections[8][3] = new Intersection(new Point(8,3),270, Arrays.asList(new String[]{"F", "R", "L"}),manager, TRAFFICLIGHTS);
+		intersections[9][5] = new Intersection(new Point(9,5),180, Arrays.asList(new String[]{"F", "R", "L"}),manager, TRAFFICLIGHTS);
+		intersectManagers.add(manager);
 
 		//4 way
-		intersections[22][23] = new Intersection(new Point(22,23),0, Arrays.asList(new String[]{"F", "R", "L"}));
-		intersections[23][25] = new Intersection(new Point(23,25),90, Arrays.asList(new String[]{"F", "R", "L"}));
-		intersections[24][22] = new Intersection(new Point(24,22),270, Arrays.asList(new String[]{"F", "R", "L"}));
-		intersections[25][24] = new Intersection(new Point(25,24),180, Arrays.asList(new String[]{"F", "R", "L"}));
+		manager = new IntersectionManager();
+		intersections[6][23] = new Intersection(new Point(6,23),0, Arrays.asList(new String[]{"F", "R", "L"}),manager, TRAFFICLIGHTS);
+		intersections[7][25] = new Intersection(new Point(7,25),90, Arrays.asList(new String[]{"F", "R", "L"}),manager, TRAFFICLIGHTS);
+		intersections[8][22] = new Intersection(new Point(8,22),270, Arrays.asList(new String[]{"F", "R", "L"}),manager, TRAFFICLIGHTS);
+		intersections[9][24] = new Intersection(new Point(9,24),180, Arrays.asList(new String[]{"F", "R", "L"}),manager, TRAFFICLIGHTS);
+		intersectManagers.add(manager);
 
-
+		//4 way
+		manager = new IntersectionManager();
+		intersections[22][23] = new Intersection(new Point(22,23),0, Arrays.asList(new String[]{"F", "R", "L"}),manager, TRAFFICLIGHTS);
+		intersections[23][25] = new Intersection(new Point(23,25),90, Arrays.asList(new String[]{"F", "R", "L"}),manager, TRAFFICLIGHTS);
+		intersections[24][22] = new Intersection(new Point(24,22),270, Arrays.asList(new String[]{"F", "R", "L"}),manager, TRAFFICLIGHTS);
+		intersections[25][24] = new Intersection(new Point(25,24),180, Arrays.asList(new String[]{"F", "R", "L"}),manager, TRAFFICLIGHTS);
+		intersectManagers.add(manager);
 	}
+
 	public static void initialize() {
 		initializeLists();
 		autonomousCount = 0;
@@ -229,8 +243,15 @@ public class Board {
 		objects = new Object[nX][nY];
 		cars = new ArrayList<>();
 		trafficLights = new ArrayList<>();
-		initiateObjects();
+		if(TRAFFICLIGHTS){
+			initiateObjects();
+		}
+	}
 
+	public static void resetManagers(){
+		for(IntersectionManager im : intersectManagers){
+			im.reset();
+		}
 	}
 	
 	/****************************
@@ -280,7 +301,7 @@ public class Board {
 		int time;
 		
 		public RunThread(int time){
-			this.time = time*100;
+			this.time = time*1;
 		}
 		
 	    public void run() {
@@ -303,6 +324,7 @@ public class Board {
 	public static void reset() {
 		removeObjects();
 		initialize();
+		resetManagers();
 		GUI.displayBoard();
 		displayObjects();	
 		GUI.update();
@@ -313,6 +335,12 @@ public class Board {
 		removeObjects();
 		for(TrafficLight tl : trafficLights){
 			tl.tick();
+		}
+		for(Car a : cars){
+			a.signIntoIntersection();
+		}
+		for(IntersectionManager im : intersectManagers){
+			im.resolve();
 		}
 		for(Car a : cars){
 			a.agentDecision();

@@ -6,17 +6,12 @@ import java.util.List;
 
 public class CarAutonomous extends Car {
     private Point ahead;
-    private Point pathAhead;
-
+    private IntersectionManager intersectManager;
     private List<Point> path = new ArrayList<>();
-
-    public CarAutonomous(Point point, int direction){
-        super(point, direction,Color.BLUE);
-        Board.incAutonomous();
-    }
+    private boolean hasWaitedInGreen = false;
 
     public CarAutonomous(Point point){
-        super(point,Color.BLUE);
+        super(point, Color.BLUE);
         Board.incAutonomous();
     }
 
@@ -25,175 +20,174 @@ public class CarAutonomous extends Car {
 
     }
 
+    public TrafficLight calcTF(){
+        Point trafficLightLocal = new Point(point.x, point.y);
+        switch(direction){
+            case 0:
+                trafficLightLocal.y--;
+                break;
+            case 90:
+                trafficLightLocal.x--;
+                break;
+            case 180:
+                trafficLightLocal.y++;
+                break;
+            default:
+                trafficLightLocal.x++;
+        }
+        return (TrafficLight) Board.getObject(trafficLightLocal);
+    }
+
+    public void calcPath(){
+        path.clear();
+        Intersection intersectAux = Board.getIntersection(point);
+        if(intersectAux.gettrafficLights()){
+            TrafficLight tf = calcTF();
+            for(int i = 0; i < tf.getTicksTilGreen(); i++){
+                path.add(new Point(point.x, point.y));
+            }
+        }
+        path.addAll(intersectAux.calcPathIntersect(point, intersectAux.getDestination(decision), direction));
+    }
+    public void signIntoIntersection(){
+        ahead = aheadPosition();
+        if(intoIntersection(ahead) && path.size() == 0){
+            Intersection intersectAux = Board.getIntersection(point);
+            List<String> possibleWays = intersectAux.getPossibleExits();
+            int index = random.nextInt(possibleWays.size());
+            decision = possibleWays.get(index);
+            calcPath();
+            intersectManager = intersectAux.getManager();
+            myID = intersectManager.signInIntersection(path, this);
+        }
+        else if(intoIntersection(ahead)) {
+            if(Board.getIntersection(point).gettrafficLights() && calcTF().color == Color.YELLOW && hasWaitedInGreen){
+                hasWaitedInGreen = false;
+                calcPath();
+                intersectManager.updatePath(myID, path);
+            }
+        }
+    }
+
     /**********************
      **** A: decision *****
      **********************/
 
-    public void agentDecision() {
+    public void agentDecision(){
         this.totalTicks++;
         ahead = aheadPosition();
-        if(!isRoad(ahead)){
-
-        }
+        if(!isRoad(ahead)){ }
         else if(path.size() > 0){
             if(intoIntersection(ahead)){
-                Point trafficLightLocal = new Point(point.x,point.y);
-                switch(direction) {
-                    case 0: trafficLightLocal.y--; break;
-                    case 90: trafficLightLocal.x--; break;
-                    case 180: trafficLightLocal.y++; break;
-                    default: trafficLightLocal.x++;
-                }
-                if(!isGreen(trafficLightLocal)){
-                    stay();
-                }
-                else if(!Board.isEmpty(ahead)){
-                    stay();
-                }
-                else {
-                    moveAhead(ahead);
+                Point pathManager = intersectManager.getAction(myID);
+                if(comparePoints(pathManager, point) && Board.getIntersection(point).gettrafficLights() && calcTF().color != Color.GREEN){
                     path.remove(0);
+                    stay();
                 }
-            }
-            else {
-                pathAhead = path.get(0);
-                if(!comparePoints(ahead, pathAhead)){
-                    if(direction == 270){
-                        if(pathAhead.y != point.y){
-                            moveAhead(ahead);
-                            path.remove(0);
-                        }
-                        else {
-                            if(pathAhead.x > point.x){
-                                rotateRight();
-                            }
-                            else {
-                                rotateLeft();
-                            }
-                        }
-                    }
-                    else if(direction == 90){
-                        if(pathAhead.y != point.y){
-                            moveAhead(ahead);
-                            path.remove(0);
-                        }
-                        else {
-                            if(pathAhead.x > point.x){
-                                rotateLeft();
-                            }
-                            else {
-                                rotateRight();
-                            }
-                        }
-                    }
-                    else if(direction == 0){
-                        if(pathAhead.x != point.x){
-                            moveAhead(ahead);
-                            path.remove(0);
-                        }
-                        else {
-                            if(pathAhead.y > point.y){
-                                rotateLeft();
-                            }
-                            else {
-                                rotateRight();
-                            }
-                        }
-                    }
-                    else {
-                        if(pathAhead.x != point.x){
-                            moveAhead(ahead);
-                            path.remove(0);
-                        }
-                        else {
-                            if(pathAhead.y > point.y){
-                                rotateRight();
-                            }
-                            else {
-                                rotateLeft();
-                            }
-                        }
-                    }
-                    return;
-                }
-                else {
-                    if(!Board.isEmpty(ahead)){
+                else{
+                    if(comparePoints(pathManager, point)){
+                        hasWaitedInGreen = true;
                         stay();
                     }
-
                     else {
                         moveAhead(ahead);
                         path.remove(0);
                     }
                 }
             }
+            else{
+                Point pathManager = intersectManager.getAction(myID);
+                if(comparePoints(pathManager, point) && path.contains(ahead)){
+                    stay();
+                    return;
+                }
+                if(!comparePoints(ahead, pathManager)){
+                    path.remove(0);
+                    Point pointToRotate = path.get(0);
+                    if(direction == 270){
+                        if(pointToRotate.x > point.x){
+                            rotateRight();
+                        }
+                        else{
+                            rotateLeft();
+                        }
+                    }
+                    else if(direction == 90){
+                        if(pointToRotate.x > point.x){
+                            rotateLeft();
+                        }
+                        else{
+                            rotateRight();
+                        }
+                    }
+                    else if(direction == 0){
+                        if(pointToRotate.y > point.y){
+                            rotateLeft();
+                        }
+                        else{
+                            rotateRight();
+                        }
+                    }
+                    else{
+                        if(pointToRotate.y > point.y){
+                            rotateRight();
+                        }
+                        else{
+                            rotateLeft();
+                        }
+                    }
+                }
+                else{
+                    moveAhead(ahead);
+                    path.remove(0);
+                }
+            }
 
         }
-        else if(intoIntersection(ahead)){
-            if(path.size() == 0){
-                Intersection intersectAux = Board.getIntersection(point);
-                List<String> possibleWays = intersectAux.getPossibleExits();
-                int index = random.nextInt(possibleWays.size());
-                String decision = possibleWays.get(index);
-                path = intersectAux.calcPathIntersect(point,intersectAux.getDestination(decision), direction);
-            }
-            Point trafficLightLocal = new Point(point.x,point.y);
-            switch(direction) {
-                case 0: trafficLightLocal.y--; break;
-                case 90: trafficLightLocal.x--; break;
-                case 180: trafficLightLocal.y++; break;
-                default: trafficLightLocal.x++;
-            }
-            if(!isGreen(trafficLightLocal)){
-                stay();
-            }
-            else if(!Board.isEmpty(ahead)){
-                stay();
-            }
-            else {
-                moveAhead(ahead);
-                path.remove(0);
-            }
-        }
-        else if(inCurve()) {
-            switch (((RoadCurveBlock) Board.getBlock(point)).getAction()) {
+        else if(inCurve()){
+            switch(((RoadCurveBlock) Board.getBlock(point)).getAction()){
                 case "left":
-                    if(!(Board.getBlock(ahead) instanceof RoadCurveBlock))
+                    if(!(Board.getBlock(ahead) instanceof RoadCurveBlock)){
                         rotateLeft();
-                    else {
-                        if (!Board.isEmpty(ahead)) ;
-                        else
+                    }
+                    else{
+                        if(!Board.isEmpty(ahead));
+                        else{
                             moveAhead(ahead);
+                        }
                     }
                     break;
                 case "right":
-                    if((Board.getBlock(ahead) instanceof RoadCurveBlock))
+                    if((Board.getBlock(ahead) instanceof RoadCurveBlock)){
                         rotateRight();
-                    else {
+                    }
+                    else{
                         if(!Board.isEmpty(ahead));
-                        else
+                        else{
                             moveAhead(ahead);
+                        }
                     }
                     break;
                 case "continue":
                     if(!Board.isEmpty(ahead));
-                    else
+                    else{
                         moveAhead(ahead);
+                    }
                     break;
             }
         }
         else if(!Board.isEmpty(ahead)){
             stay();
         }
-
-        else {
+        else{
             moveAhead(ahead);
         }
     }
 
-    public void moveAhead(Point ahead) {
-        Board.updateEntityPosition(point,ahead);
+    public void moveAhead(Point ahead){
+        Board.updateEntityPosition(point, ahead);
         this.totalStepsGiven++;
+        this.totaldistance++;
         this.point = ahead;
     }
 
@@ -203,5 +197,4 @@ public class CarAutonomous extends Car {
         }
         return p1.y == p2.y;
     }
-
 }

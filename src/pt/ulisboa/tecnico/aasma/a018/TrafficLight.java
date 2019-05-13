@@ -18,6 +18,7 @@ public class TrafficLight extends Object {
         }
         else if(initial == Color.red) {
             ticksLeft = redDurationTick;
+            ticksLeft -= 5;
         }
         else {
             ticksLeft = yellowDurantionTick;
@@ -26,6 +27,18 @@ public class TrafficLight extends Object {
 
     public Color getColor(){
         return color;
+    }
+
+    public int getTicksTilGreen(){
+        if(color == Color.GREEN){
+            return 0;
+        }
+        else if(color == Color.yellow){
+            return ticksLeft + redDurationTick;
+        }
+        else {
+            return ticksLeft;
+        }
     }
 
     public void tick(){

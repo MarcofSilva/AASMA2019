@@ -10,8 +10,14 @@ public class Intersection {
 
     Map<String, Point> exitsByDirection = new HashMap<>();
     List<String> possibleDirections;
-    public Intersection(Point location, int direction, List<String> exits){
+    IntersectionManager manager;
+    private boolean trafficLights = false;
+
+    public Intersection(Point location, int direction, List<String> exits, IntersectionManager manager, boolean trafficLights){
         possibleDirections = exits;
+        this.trafficLights = trafficLights;
+
+        this.manager = manager;
         for(String exit : exits){
             switch (exit){
                 case "F":
@@ -70,7 +76,7 @@ public class Intersection {
         Point destination = new Point(end.x, end.y);
         ArrayList<Point> path = new ArrayList<>();
 
-        //going horizontal equalize y
+        //going horizontal equalize x
         if(direction == 0 || direction == 180){
             while(location.x != destination.x){
                 if(location.x > destination.x){
@@ -80,6 +86,9 @@ public class Intersection {
                     location.x++;
 
                 }
+                path.add(new Point(location.x, location.y));
+            }
+            if(location.y != destination.y){
                 path.add(new Point(location.x, location.y));
             }
             while(location.y != destination.y){
@@ -105,6 +114,9 @@ public class Intersection {
                 }
                 path.add(new Point(location.x, location.y));
             }
+            if(location.x != destination.x){
+                path.add(new Point(location.x, location.y));
+            }
             while(location.x != destination.x){
                 if(location.x > destination.x){
                     location.x--;
@@ -116,7 +128,6 @@ public class Intersection {
                 path.add(new Point(location.x, location.y));
             }
         }
-
         return path;
     }
 
@@ -127,4 +138,13 @@ public class Intersection {
     public List<String> getPossibleExits(){
         return possibleDirections;
     }
+
+    public boolean gettrafficLights(){
+        return trafficLights;
+    }
+
+    public IntersectionManager getManager(){
+        return manager;
+    }
+
 }

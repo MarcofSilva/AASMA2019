@@ -50,8 +50,8 @@ public abstract class Car extends Object {
 	/**** B: sensors ****/
 	/********************/
 
-	protected int getStepsStopped(){
-		return (totalTicks - totalStepsGiven)/totaldistance;
+	protected double getStepsStopped(){
+		return ((totalTicks - totalStepsGiven)/totaldistance)*100;
 	}
 	protected boolean isGreen(Point point){
 		TrafficLight tf = (TrafficLight) Board.getObject(point);

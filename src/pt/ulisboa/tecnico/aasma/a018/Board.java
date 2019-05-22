@@ -50,8 +50,11 @@ public class Board {
 		int missingCars = nrCars - cars.size();
 		if(missingCars > 0){
 			Collections.shuffle(spawnPoints);
-			//TODO
 			for(int i = 0; i < missingCars && i < 8; i++){
+				Object obj = Board.getObject(spawnPoints.get(i));
+				if(obj != null){
+					continue;
+				}
 				if(autonomousCount < nrCars*(percentCars/100.0)){
 					spawnCar( new CarAutonomous(spawnPoints.get(i)));
 				}
@@ -60,6 +63,7 @@ public class Board {
 				}
 			}
 		}
+		System.out.println(cars.size());
 	}
 	private static void buildHorizontalroad(int lane, int startPoint, int lenght){
 		for(int k = 0; k<2; k++){

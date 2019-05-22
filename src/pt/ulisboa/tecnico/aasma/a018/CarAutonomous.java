@@ -10,6 +10,7 @@ public class CarAutonomous extends Car {
     private Point ahead;
     private ArrayList<Point> path = new ArrayList<>();
     private String decision = "";
+    private Point destination = null;
 
     public CarAutonomous(Point point){
         super(point, Color.BLUE);
@@ -134,6 +135,7 @@ public class CarAutonomous extends Car {
                 path.remove(0);
                 if(path.size() == 0){ //TODO idk if this is usefull because decision is always defines when entering intersect and i only ask for it when in intersect
                     decision = "";
+                    destination = null;
                 }
             }
         }
@@ -151,6 +153,7 @@ public class CarAutonomous extends Car {
         if(intoIntersection(ahead)){
             if(path.size() == 0){
                 path = calcPath();
+                destination = path.get(path.size()-1);
             }
         }
         if(path.size() > 0){
@@ -197,7 +200,8 @@ public class CarAutonomous extends Car {
                                         }
                                     }
                                     else {
-                                        if(comparePoints(carAuto.ahead, threepositionsAhead())){
+                                        //if he wants to get out of the intersection i can go
+                                        if(comparePoints(carAuto.getDestination(), threepositionsAhead())){
                                             moveAheadConditionally();
                                         }
                                         else {
@@ -321,6 +325,10 @@ public class CarAutonomous extends Car {
         this.totalActionsTaken++;
         this.totaldistance++;
         this.point = ahead;
+    }
+
+    public Point getDestination(){
+        return destination;
     }
 
     public boolean comparePoints(Point p1, Point p2){

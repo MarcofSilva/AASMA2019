@@ -176,16 +176,16 @@ public class CarAutonomous extends Car {
                                     moveAheadConditionally();
                                 }
                                 else {
-                                    if(Board.TRAFFICLIGHTS){
+                                    if(Board.trafficLightState){
                                         if(carAuto.getDecision().equals("F")){
                                             moveAheadConditionally();
                                         }
                                         else {
-                                            Car conflictCar = (Car) Board.getObject(getConflictingPosition()); //TODO check if there is no prob with this
-                                            if(conflictCar == null){
+                                            if(Board.isEmpty(getConflictingPosition())){
                                                 moveAheadConditionally();
                                             }
-                                            else if(conflictCar instanceof CarNormal){
+                                            Car conflictCar = (Car) Board.getObject(getConflictingPosition()); //TODO check if there is no prob with this
+                                            if(conflictCar instanceof CarNormal){
                                                 stay();
                                             }
                                             else {
@@ -205,11 +205,11 @@ public class CarAutonomous extends Car {
                                             moveAheadConditionally();
                                         }
                                         else {
-                                            Car conflictCar = (Car) Board.getObject(getConflictingPosition()); //TODO check if there is no prob with this
-                                            if(conflictCar == null){
+                                            if(Board.isEmpty(getConflictingPosition())){
                                                 moveAheadConditionally();
                                             }
-                                            else if(conflictCar instanceof CarNormal){
+                                            Car conflictCar = (Car) Board.getObject(getConflictingPosition()); //TODO check if there is no prob with this
+                                            if(conflictCar instanceof CarNormal){
                                                 stay();
                                             }
                                             else {

@@ -21,7 +21,7 @@ public class Board {
 	private static List<Car> carsToRemove = new ArrayList<>();
 	//private static List<IntersectionManager> intersectManagers = new ArrayList<>();
 
-	public static boolean TRAFFICLIGHTS = true;
+	public static boolean trafficLightState = true;
 	public static int nX = 30, nY = 30, nrCars, totalCarCounter,totalACarCounter, totalNcar, percentCars = 50;
 	public static double medianAll = 0.0, medianNormal = 0.0, medianAuto = 0.0;
 	public static double medianAll2 = 0.0, medianNormal2 = 0.0, medianAuto2 = 0.0;
@@ -39,6 +39,7 @@ public class Board {
 		normalCount++;
 	}
 	public static void setCommunication(){communication = !communication;}
+	public static void setTrafficLights(){trafficLightState = !trafficLightState;}
 	public static void notifyPercent(int percent){
 		percentCars = percent;
 	}
@@ -164,7 +165,7 @@ public class Board {
 				}
 		}
 	}
-	private static void initiateObjects(){
+	private static void initiateTrafficLights(){
 		createTrafficLights(new Point(22, 22));
 		createTrafficLights(new Point(6, 22));
 		createTrafficLights(new Point(6, 3));
@@ -205,22 +206,22 @@ public class Board {
 		intersections[25][9] = new Intersection(new Point(25,9),180, Arrays.asList(new String[]{"F", "R"}),false);
 
 		//4 way
-		intersections[6][4] = new Intersection(new Point(6,4),0, Arrays.asList(new String[]{"F", "R", "L"}),TRAFFICLIGHTS);
-		intersections[7][6] = new Intersection(new Point(7,6),90, Arrays.asList(new String[]{"F", "R", "L"}),TRAFFICLIGHTS);
-		intersections[8][3] = new Intersection(new Point(8,3),270, Arrays.asList(new String[]{"F", "R", "L"}),TRAFFICLIGHTS);
-		intersections[9][5] = new Intersection(new Point(9,5),180, Arrays.asList(new String[]{"F", "R", "L"}),TRAFFICLIGHTS);
+		intersections[6][4] = new Intersection(new Point(6,4),0, Arrays.asList(new String[]{"F", "R", "L"}),trafficLightState);
+		intersections[7][6] = new Intersection(new Point(7,6),90, Arrays.asList(new String[]{"F", "R", "L"}),trafficLightState);
+		intersections[8][3] = new Intersection(new Point(8,3),270, Arrays.asList(new String[]{"F", "R", "L"}),trafficLightState);
+		intersections[9][5] = new Intersection(new Point(9,5),180, Arrays.asList(new String[]{"F", "R", "L"}),trafficLightState);
 
 		//4 way
-		intersections[6][23] = new Intersection(new Point(6,23),0, Arrays.asList(new String[]{"F", "R", "L"}), TRAFFICLIGHTS);
-		intersections[7][25] = new Intersection(new Point(7,25),90, Arrays.asList(new String[]{"F", "R", "L"}), TRAFFICLIGHTS);
-		intersections[8][22] = new Intersection(new Point(8,22),270, Arrays.asList(new String[]{"F", "R", "L"}), TRAFFICLIGHTS);
-		intersections[9][24] = new Intersection(new Point(9,24),180, Arrays.asList(new String[]{"F", "R", "L"}), TRAFFICLIGHTS);
+		intersections[6][23] = new Intersection(new Point(6,23),0, Arrays.asList(new String[]{"F", "R", "L"}), trafficLightState);
+		intersections[7][25] = new Intersection(new Point(7,25),90, Arrays.asList(new String[]{"F", "R", "L"}), trafficLightState);
+		intersections[8][22] = new Intersection(new Point(8,22),270, Arrays.asList(new String[]{"F", "R", "L"}), trafficLightState);
+		intersections[9][24] = new Intersection(new Point(9,24),180, Arrays.asList(new String[]{"F", "R", "L"}), trafficLightState);
 
 		//4 way
-		intersections[22][23] = new Intersection(new Point(22,23),0, Arrays.asList(new String[]{"F", "R", "L"}), TRAFFICLIGHTS);
-		intersections[23][25] = new Intersection(new Point(23,25),90, Arrays.asList(new String[]{"F", "R", "L"}), TRAFFICLIGHTS);
-		intersections[24][22] = new Intersection(new Point(24,22),270, Arrays.asList(new String[]{"F", "R", "L"}), TRAFFICLIGHTS);
-		intersections[25][24] = new Intersection(new Point(25,24),180, Arrays.asList(new String[]{"F", "R", "L"}), TRAFFICLIGHTS);
+		intersections[22][23] = new Intersection(new Point(22,23),0, Arrays.asList(new String[]{"F", "R", "L"}), trafficLightState);
+		intersections[23][25] = new Intersection(new Point(23,25),90, Arrays.asList(new String[]{"F", "R", "L"}), trafficLightState);
+		intersections[24][22] = new Intersection(new Point(24,22),270, Arrays.asList(new String[]{"F", "R", "L"}), trafficLightState);
+		intersections[25][24] = new Intersection(new Point(25,24),180, Arrays.asList(new String[]{"F", "R", "L"}), trafficLightState);
 	}
 
 	public static void initialize() {
@@ -243,8 +244,8 @@ public class Board {
 		objects = new Object[nX][nY];
 		cars = new ArrayList<>();
 		trafficLights = new ArrayList<>();
-		if(TRAFFICLIGHTS){
-			initiateObjects();
+		if(trafficLightState){
+			initiateTrafficLights();
 		}
 	}
 
@@ -339,16 +340,7 @@ public class Board {
 
 		for(Car a : cars){
 			a.agentDecision();
-		}/*
-		for(Car a : cars){
-			a.signIntoIntersection();
 		}
-		for(IntersectionManager im : intersectManagers){
-			im.resolve();
-		}
-		for(Car a : cars){
-			a.agentDecision();
-		}*/
 		removeCars();
 		checkNumberOfCars();
 		displayObjects();

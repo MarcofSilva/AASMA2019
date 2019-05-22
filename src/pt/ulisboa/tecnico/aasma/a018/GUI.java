@@ -21,7 +21,7 @@ public class GUI extends JFrame {
 	
 	static JTextField speed;
 	static JPanel boardPanel;
-	static JButton run, reset, step, communication;
+	static JButton run, reset, step, communication, trafficlights;
 	static JSlider percentCars;
 	static JTextField nrCars;
 	private int nX, nY;
@@ -33,7 +33,7 @@ public class GUI extends JFrame {
 	static JTextArea automediantext2, automedian2;
 	static JTextArea normmediantext2, normmedian2;
 
-	static JTextArea introductionText, introductionText2, communcationText;
+	static JTextArea introductionText, introductionText2, communcationText, trafficlightsText;
 
 	static JTextArea legend1, legend2;
 
@@ -256,6 +256,28 @@ public class GUI extends JFrame {
 				} else {
 					communication.setText("Off");
 					Board.setCommunication();
+				}
+			}
+		});
+
+
+		trafficlightsText = new JTextArea("Traffic lights are: ");
+		panel.add(trafficlightsText);
+
+		trafficlights = new JButton("On");
+		panel.add(trafficlights);
+		trafficlights.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				if(trafficlights.getText().equals("Off")){
+					trafficlights.setText("On");
+					Board.setTrafficLights();
+					Board.reset();
+
+				} else {
+					trafficlights.setText("Off");
+					Board.setTrafficLights();
+					Board.reset();
+
 				}
 			}
 		});

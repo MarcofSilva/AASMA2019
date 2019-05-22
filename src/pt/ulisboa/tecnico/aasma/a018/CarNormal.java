@@ -10,6 +10,8 @@ public class CarNormal extends Car {
     private List<Point> path = new ArrayList<>();
     //private boolean hasWaitedInGreen = false;
     private boolean delay = false;
+    private String decision = "";
+
 
     public CarNormal(Point point){
         super(point, Color.MAGENTA);
@@ -44,7 +46,8 @@ public class CarNormal extends Car {
         Intersection intersectAux = Board.getIntersection(point);
         List<String> possibleWays = intersectAux.getPossibleExits();
         int index = random.nextInt(possibleWays.size());
-        return intersectAux.calcPathIntersect(point, intersectAux.getDestination(possibleWays.get(index)), direction);
+        decision = possibleWays.get(index);
+        return intersectAux.calcPathIntersect(point, intersectAux.getDestination(decision), direction);
     }
 /*
     public void signIntoIntersection(){
@@ -84,9 +87,15 @@ public class CarNormal extends Car {
         }
         if(path.size() > 0){
             if(intoIntersection(ahead)){
-                if(isGreen(point) && Board.isEmpty(ahead) && Board.isEmpty(twoaheadPosition())){
-                    if(comparePoints(path.get(0), ahead)){//TODO remove, here to debug, should not be necessary
+                if(isGreen(point) && Board.isEmpty(ahead)){
+                    if(decision.equals("R")){
                         moveAhead(ahead);
+                    }
+                    else if(comparePoints(path.get(0), ahead) && Board.isEmpty(twoaheadPosition())){//TODO remove, here to debug, should not be necessary
+                        moveAhead(ahead);
+                    }
+                    else {
+                        stay();
                     }
                 }
                 else {

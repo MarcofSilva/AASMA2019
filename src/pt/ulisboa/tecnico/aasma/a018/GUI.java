@@ -35,6 +35,9 @@ public class GUI extends JFrame {
 
 	static JTextArea introductionText, introductionText2, communcationText;
 
+	static JTextArea legend1, legend2;
+
+
 	static final int CARS_MIN = 0;
 	static final int CARS_MAX = 100;
 	static final int CARS_INIT = 50;
@@ -65,6 +68,18 @@ public class GUI extends JFrame {
         }
 	}
 
+	public class Legend extends JPanel {
+
+		public Color color;
+
+		@Override
+		protected void paintComponent(Graphics g) {
+			super.paintComponent(g);
+			g.setColor(color);
+			g.fillPolygon(new int[]{0, 50, 80, 80, 50, 0}, new int[]{0, 0, 40, 60, 80 ,80}, 6);
+		}
+	}
+
 	public GUI() {
 		setTitle("AASMA Project");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -73,8 +88,10 @@ public class GUI extends JFrame {
 		setSize(1200, 1000);
 		//button panel on top
 		add(createButtonPanel());
+		add(legendPanel());
 		add(metricsPanel1());
 		add(metricsPanel2());
+
 
 		Board.initialize();
 		Board.associateGUI(this);
@@ -244,6 +261,26 @@ public class GUI extends JFrame {
 		});
 
 		return panel;
+	}
+
+	private Component legendPanel(){
+		JPanel legendPanel = new JPanel();
+		legendPanel.setSize(new Dimension(150, 50));
+		legendPanel.setLocation(new Point(1000,50));
+
+		legend1 = new JTextArea("Autonomous Cars:");
+		legendPanel.add(legend1);
+		Legend l1 = new Legend();
+		l1.color = Color.blue;
+		legendPanel.add(l1);
+
+		legend2 = new JTextArea("Normal Cars:");
+		legendPanel.add(legend2);
+		Legend l2 = new Legend();
+		l2.color = Color.magenta;
+		legendPanel.add(l2);
+
+		return legendPanel;
 	}
 
 	private Component metricsPanel1(){

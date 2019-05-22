@@ -191,7 +191,7 @@ public class CarAutonomous extends Car {
                                                     stay();
                                                 }
                                                 else {
-                                                    moveAheadConditionally();
+                                                     moveAheadConditionally();
                                                 }
                                             }
                                         }

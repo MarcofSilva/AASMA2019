@@ -21,7 +21,7 @@ public class Board {
 	private static List<Car> carsToRemove = new ArrayList<>();
 	//private static List<IntersectionManager> intersectManagers = new ArrayList<>();
 
-	private static boolean TRAFFICLIGHTS = true;
+	public static boolean TRAFFICLIGHTS = true;
 	public static int nX = 30, nY = 30, nrCars, totalCarCounter,totalACarCounter, totalNcar, percentCars = 50;
 	public static double medianAll = 0.0, medianNormal = 0.0, medianAuto = 0.0;
 	private static Block[][] board;

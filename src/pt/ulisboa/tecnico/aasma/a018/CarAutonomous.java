@@ -142,29 +142,55 @@ public class CarAutonomous extends Car {
                                 if(decision.equals("R") && Board.isEmpty(ahead)){
                                     moveAheadConditionally();
                                 }
-                                //if the one in front doesnt want to turn left, there wont be a problem
-                                else if(!carAuto.getDecision().equals("L")){
-                                    moveAheadConditionally();
-                                }
-                                else{
-                                    Point conflictingPosition = getConflictingPosition();
-                                    Car conflictCar = (Car) Board.getObject(conflictingPosition); //TODO check if there is no prob with this
-                                    if(conflictCar == null){
-                                        moveAheadConditionally();
-                                    }
-                                    else if(conflictCar instanceof CarNormal){
-                                        stay();
-                                    }
-                                    else {
-                                        CarAutonomous conflictAuto = (CarAutonomous) conflictCar;
-                                        if(conflictAuto.getDecision().equals("L")){
-                                            stay();
-                                        }
-                                        else {
+                                else {
+                                    if(Board.TRAFFICLIGHTS){
+                                        if(carAuto.getDecision().equals("F")){
                                             moveAheadConditionally();
                                         }
+                                        else {
+                                            Car conflictCar = (Car) Board.getObject(getConflictingPosition()); //TODO check if there is no prob with this
+                                            if(conflictCar == null){
+                                                moveAheadConditionally();
+                                            }
+                                            else if(conflictCar instanceof CarNormal){
+                                                stay();
+                                            }
+                                            else {
+                                                CarAutonomous conflictAuto = (CarAutonomous) conflictCar;
+                                                if(conflictAuto.getDecision().equals("L")){
+                                                    stay();
+                                                }
+                                                else {
+                                                    moveAheadConditionally();
+                                                }
+                                            }
+                                        }
+                                    }
+                                    else {
+                                        if(carAuto.getDecision().equals("F")){
+                                            moveAheadConditionally();
+                                        }
+                                        else {
+                                            Car conflictCar = (Car) Board.getObject(getConflictingPosition()); //TODO check if there is no prob with this
+                                            if(conflictCar == null){
+                                                moveAheadConditionally();
+                                            }
+                                            else if(conflictCar instanceof CarNormal){
+                                                stay();
+                                            }
+                                            else {
+                                                CarAutonomous conflictAuto = (CarAutonomous) conflictCar;
+                                                if(comparePoints(conflictAuto.ahead, ahead) || comparePoints(conflictAuto.ahead, conflictAuto.point)){
+                                                    stay();
+                                                }
+                                                else {
+                                                    moveAheadConditionally();
+                                                }
+                                            }
+                                        }
                                     }
                                 }
+                                //if the one in front doesnt want to turn left, there wont be a problem
                             }
                         }
 

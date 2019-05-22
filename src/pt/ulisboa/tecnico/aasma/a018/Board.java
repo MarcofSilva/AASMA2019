@@ -24,6 +24,7 @@ public class Board {
 	public static boolean TRAFFICLIGHTS = true;
 	public static int nX = 30, nY = 30, nrCars, totalCarCounter,totalACarCounter, totalNcar, percentCars = 50;
 	public static double medianAll = 0.0, medianNormal = 0.0, medianAuto = 0.0;
+	public static double medianAll2 = 0.0, medianNormal2 = 0.0, medianAuto2 = 0.0;
 	private static Block[][] board;
 	private static Object[][] objects;
 	private static List<Car> cars;
@@ -226,6 +227,9 @@ public class Board {
 		medianAll = 0.0;
 		medianNormal = 0.0;
 		medianAuto = 0.0;
+		medianAll2 = 0.0;
+		medianNormal2 = 0.0;
+		medianAuto2 = 0.0;
 		totalCarCounter = 0;
 		totalACarCounter = 0;
 		totalNcar = 0;
@@ -371,19 +375,23 @@ public class Board {
 		carsToRemove.clear();
 	}
 	public static void removeCar(Car car){
-		float d = car.getStepsStopped();
-        medianAll = (medianAll*totalCarCounter + d)/(totalCarCounter+1);
+		float d1 = car.getStepsStopped();
+		float d2 = car.getStepsStopped2();
+        medianAll = (medianAll*totalCarCounter + d1)/(totalCarCounter+1);
+        medianAll2 = (medianAll2*totalCarCounter + d2)/(totalCarCounter+1);
 	    totalCarCounter++;
 		carsToRemove.add(car);
 		if(car instanceof CarAutonomous){
 			autonomousCount--;
-			medianAuto = (medianAuto*totalACarCounter + d)/(totalACarCounter+1);
+			medianAuto = (medianAuto*totalACarCounter + d1)/(totalACarCounter+1);
+			medianAuto2 = (medianAuto2*totalACarCounter + d2)/(totalACarCounter+1);
 			totalACarCounter++;
 
 		}
 		else {
 			normalCount--;
-			medianNormal = (medianNormal*totalNcar + d)/(totalNcar+1);
+			medianNormal = (medianNormal*totalNcar + d1)/(totalNcar+1);
+			medianNormal2 = (medianNormal2*totalNcar + d2)/(totalNcar+1);
 			totalNcar++;
 		}
 	}

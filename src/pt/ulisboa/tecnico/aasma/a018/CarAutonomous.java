@@ -21,6 +21,17 @@ public class CarAutonomous extends Car {
 
     }
 
+    protected Point threepositionsAhead() {
+        Point newpoint = new Point(point.x,point.y);
+        switch(direction) {
+            case 0: newpoint.x = newpoint.x + 3; break;
+            case 90: newpoint.y = newpoint.y - 3; break;
+            case 180: newpoint.x = newpoint.x - 3; break;
+            default: newpoint.y = newpoint.y + 3;
+        }
+        return newpoint;
+    }
+
     public TrafficLight calcTF(){
         Point trafficLightLocal = new Point(point.x, point.y);
         switch(direction){
@@ -61,7 +72,27 @@ public class CarAutonomous extends Car {
         return newpoint;
     }
 
-
+    public Point getConflictingPosition2(){
+        Point newpoint = new Point(point.x, point.y);
+        switch(direction){
+            case 0:
+                newpoint.x = newpoint.x+2;
+                newpoint.y++;
+                break;
+            case 90:
+                newpoint.x++;
+                newpoint.y = newpoint.y-2;
+                break;
+            case 180:
+                newpoint.x = newpoint.x-2;
+                newpoint.y--;
+                break;
+            default:
+                newpoint.x--;
+                newpoint.y = newpoint.y+2;
+        }
+        return newpoint;
+    }
 
     public ArrayList<Point> calcPath(){
         path.clear();
@@ -137,7 +168,6 @@ public class CarAutonomous extends Car {
                             }
                             else {
                                 CarAutonomous carAuto = (CarAutonomous) car;
-
                                 //if i am turning right, i can do it always
                                 if(decision.equals("R") && Board.isEmpty(ahead)){
                                     moveAheadConditionally();
@@ -167,7 +197,7 @@ public class CarAutonomous extends Car {
                                         }
                                     }
                                     else {
-                                        if(carAuto.getDecision().equals("F")){
+                                        if(comparePoints(carAuto.ahead, threepositionsAhead())){
                                             moveAheadConditionally();
                                         }
                                         else {

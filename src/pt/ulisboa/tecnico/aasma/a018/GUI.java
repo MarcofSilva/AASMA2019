@@ -28,7 +28,12 @@ public class GUI extends JFrame {
 	static JTextArea allmediantext, allmedian;
 	static JTextArea automediantext, automedian;
 	static JTextArea normmediantext, normmedian;
-	static JTextArea introductionText, communcationText;
+
+	static JTextArea allmediantext2, allmedian2;
+	static JTextArea automediantext2, automedian2;
+	static JTextArea normmediantext2, normmedian2;
+
+	static JTextArea introductionText, introductionText2, communcationText;
 
 	static final int CARS_MIN = 0;
 	static final int CARS_MAX = 100;
@@ -68,7 +73,8 @@ public class GUI extends JFrame {
 		setSize(1200, 1000);
 		//button panel on top
 		add(createButtonPanel());
-		add(metricsPanel());
+		add(metricsPanel1());
+		add(metricsPanel2());
 
 		Board.initialize();
 		Board.associateGUI(this);
@@ -125,6 +131,9 @@ public class GUI extends JFrame {
 		allmedian.setText(String.format("%.2f",Board.medianAll));
 		automedian.setText(String.format("%.2f",Board.medianAuto));
 		normmedian.setText(String.format("%.2f",Board.medianNormal));
+		allmedian2.setText(String.format("%.2f",Board.medianAll2));
+		automedian2.setText(String.format("%.2f",Board.medianAuto2));
+		normmedian2.setText(String.format("%.2f",Board.medianNormal2));
 		repaint();
 	}
 
@@ -237,9 +246,9 @@ public class GUI extends JFrame {
 		return panel;
 	}
 
-	private Component metricsPanel(){
+	private Component metricsPanel1(){
 		JPanel metricsPanel = new JPanel();
-		metricsPanel.setSize(new Dimension(150, 900));
+		metricsPanel.setSize(new Dimension(150, 200));
 		metricsPanel.setLocation(new Point(1000,100));
 
 		introductionText = new JTextArea("Average steps stopped:");
@@ -259,6 +268,32 @@ public class GUI extends JFrame {
 		normmedian = new JTextArea("yo");
 		metricsPanel.add(normmediantext);
 		metricsPanel.add(normmedian);
+
+		return metricsPanel;
+	}
+
+	private Component metricsPanel2(){
+		JPanel metricsPanel = new JPanel();
+		metricsPanel.setSize(new Dimension(150, 200));
+		metricsPanel.setLocation(new Point(1000,300));
+
+		introductionText2 = new JTextArea("Ticks per distance:");
+		metricsPanel.add(introductionText2);
+
+		allmediantext2 = new JTextArea("AllCars:");
+		allmedian2 = new JTextArea("yo");
+		metricsPanel.add(allmediantext2);
+		metricsPanel.add(allmedian2);
+
+		automediantext2 = new JTextArea("Autonomous:");
+		automedian2 = new JTextArea("yo");
+		metricsPanel.add(automediantext2);
+		metricsPanel.add(automedian2);
+
+		normmediantext2 = new JTextArea("Normal:");
+		normmedian2 = new JTextArea("yo");
+		metricsPanel.add(normmediantext2);
+		metricsPanel.add(normmedian2);
 
 		return metricsPanel;
 	}

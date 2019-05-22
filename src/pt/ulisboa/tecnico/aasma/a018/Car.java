@@ -55,6 +55,10 @@ public abstract class Car extends Object {
 		float metric = ((totalTicks - totalActionsTaken)/(float)totaldistance)*100;
 		return metric;
 	}
+	protected float getStepsStopped2(){
+		float metric = ((totalTicks )/(float)totaldistance);
+		return metric;
+	}
 
 	protected boolean isGreen(Point point){
 		Point trafficLightLocal = new Point(point.x, point.y);

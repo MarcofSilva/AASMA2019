@@ -181,11 +181,11 @@ public class CarAutonomous extends Car {
                                             moveAheadConditionally();
                                         }
                                         else {
-                                            if(Board.isEmpty(getConflictingPosition())){
+                                            Car conflictCar = (Car) Board.getObject(getConflictingPosition()); //TODO check if there is no prob with this
+                                            if(conflictCar == null){
                                                 moveAheadConditionally();
                                             }
-                                            Car conflictCar = (Car) Board.getObject(getConflictingPosition()); //TODO check if there is no prob with this
-                                            if(conflictCar instanceof CarNormal){
+                                            else if(conflictCar instanceof CarNormal){
                                                 stay();
                                             }
                                             else {

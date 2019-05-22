@@ -167,52 +167,25 @@ public class CarAutonomous extends Car {
                             }
                             else {
                                 CarAutonomous carAuto = (CarAutonomous) car;
-                                //with traffic lights, deadlocks are way easier to prevent, so we separate it
-                                if(Board.trafficLightState){
-                                    //if he turned right we dont see it, so there is only front and left
-                                    if(carAuto.getDecision().equals("F")){
-                                        moveAheadConditionally();
-                                    }
-                                    else {
-                                        Car conflictCar = (Car) Board.getObject(getConflictingPosition());
-                                        if(conflictCar == null){
-                                            moveAheadConditionally();
-                                        }
-                                        else if(conflictCar instanceof CarNormal){
-                                            stay();
-                                        }
-                                        else {
-                                            CarAutonomous conflictAuto = (CarAutonomous) conflictCar;
-                                            if(conflictAuto.getDecision().equals("L")){
-                                                stay();
-                                            }
-                                            else {
-                                                 moveAheadConditionally();
-                                            }
-                                        }
-                                    }
+                                //if he wants to get out of the intersection i can go(he can just leave)
+                                if(comparePoints(carAuto.getDestination(), threepositionsAhead())){
+                                    moveAheadConditionally();
                                 }
                                 else {
-                                    //if he wants to get out of the intersection i can go(he can just leave)
-                                    if(comparePoints(carAuto.getDestination(), threepositionsAhead())){
+                                    Car conflictCar = (Car) Board.getObject(getConflictingPosition()); //TODO check if there is no prob with this
+                                    if(conflictCar == null){
                                         moveAheadConditionally();
                                     }
+                                    else if(conflictCar instanceof CarNormal){
+                                        stay();
+                                    }
                                     else {
-                                        Car conflictCar = (Car) Board.getObject(getConflictingPosition());
-                                        if(conflictCar == null){
+                                        CarAutonomous conflictAuto = (CarAutonomous) conflictCar;
+                                        if(comparePoints(calcSide(), conflictAuto.getDestination())){
                                             moveAheadConditionally();
                                         }
-                                        if(conflictCar instanceof CarNormal){
-                                            stay();
-                                        }
                                         else {
-                                            CarAutonomous conflictAuto = (CarAutonomous) conflictCar;
-                                            if(comparePoints(calcSide(), conflictAuto.getDestination())){
-                                                moveAheadConditionally();
-                                            }
-                                            else {
-                                                stay();
-                                            }
+                                            stay();
                                         }
                                     }
                                 }
@@ -242,7 +215,7 @@ public class CarAutonomous extends Car {
                 }
             }
             else {
-                if(comparePoints(path.get(0), ahead)){
+                if(comparePoints(path.get(0), ahead)){//TODO
                     moveAheadConditionally();
                 }
                 else {
@@ -283,6 +256,7 @@ public class CarAutonomous extends Car {
                 }
             }
         }
+        //TODO clean this, to much repeated code
         else if(inCurve()) {
         switch (((RoadCurveBlock) Board.getBlock(point)).getAction()) {
                 case "left":

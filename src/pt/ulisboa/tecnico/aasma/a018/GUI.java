@@ -33,7 +33,7 @@ public class GUI extends JFrame {
 	static JTextArea automediantext2, automedian2;
 	static JTextArea normmediantext2, normmedian2;
 
-	static JTextArea introductionText, introductionText2, communcationText, trafficlightsText;
+	static JTextArea percentCarsText, nrCarText, introductionText2, communcationText, trafficlightsText;
 
 	static JTextArea legend1, legend2;
 
@@ -85,12 +85,19 @@ public class GUI extends JFrame {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setLayout(null);
 		//size of the window to show the board
-		setSize(1200, 1000);
+		setSize(1250, 1000);
 		//button panel on top
 		add(createButtonPanel());
 		add(legendPanel());
+		add(optionsPanel1());
+		add(optionsPanel2());
+		add(optionsPanel3());
+		add(optionsPanel4());
+
+		add(metricsPanel0());
 		add(metricsPanel1());
 		add(metricsPanel2());
+		add(metricsPanel3());
 
 
 		Board.initialize();
@@ -145,9 +152,6 @@ public class GUI extends JFrame {
 	}
 
 	public void update() {
-		allmedian.setText(String.format("%.2f",Board.medianAll));
-		automedian.setText(String.format("%.2f",Board.medianAuto));
-		normmedian.setText(String.format("%.2f",Board.medianNormal));
 		allmedian2.setText(String.format("%.2f",Board.medianAll2));
 		automedian2.setText(String.format("%.2f",Board.medianAuto2));
 		normmedian2.setText(String.format("%.2f",Board.medianNormal2));
@@ -223,9 +227,51 @@ public class GUI extends JFrame {
 		speed.setMargin(new Insets(5,5,5,5));
 		panel.add(speed);
 
-		nrCars = new JTextField("Nr of Cars");
+		return panel;
+	}
+
+	private Component legendPanel(){
+		JPanel legendPanel = new JPanel();
+		legendPanel.setSize(new Dimension(250, 50));
+		legendPanel.setLocation(new Point(950,50));
+
+		legend1 = new JTextArea("Autonomous Cars:");
+		legendPanel.add(legend1);
+		Legend l1 = new Legend();
+		l1.color = Color.cyan;
+		legendPanel.add(l1);
+
+		legend2 = new JTextArea("Normal Cars:");
+		legendPanel.add(legend2);
+		Legend l2 = new Legend();
+		l2.color = Color.magenta;
+		legendPanel.add(l2);
+
+		return legendPanel;
+	}
+
+	private Component optionsPanel1(){
+		JPanel optionsPanel = new JPanel();
+		optionsPanel.setSize(new Dimension(200, 50));
+		optionsPanel.setLocation(new Point(975, 125));
+
+		nrCarText = new JTextArea("Number of cars:");
+		optionsPanel.add(nrCarText);
+
+		nrCars = new JTextField("Number");
 		nrCars.setMargin(new Insets(5,5,5,5));
-		panel.add(nrCars);
+		optionsPanel.add(nrCars);
+
+		return optionsPanel;
+	}
+
+	private Component optionsPanel2(){
+		JPanel optionsPanel = new JPanel();
+		optionsPanel.setSize(new Dimension(200, 100));
+		optionsPanel.setLocation(new Point(975, 175));
+
+		percentCarsText = new JTextArea(" % of autonomous cars:");
+		optionsPanel.add(percentCarsText);
 
 		percentCars = new JSlider(JSlider.HORIZONTAL, CARS_MIN, CARS_MAX, CARS_INIT);
 
@@ -240,13 +286,21 @@ public class GUI extends JFrame {
 		percentCars.setMinorTickSpacing(5);
 		percentCars.setPaintTicks(true);
 		percentCars.setPaintLabels(true);
-		panel.add(percentCars);
+		optionsPanel.add(percentCars);
 
-		communcationText = new JTextArea("Communication in Autonomous Cars: ");
-		panel.add(communcationText);
+		return optionsPanel;
+	}
+
+	private Component optionsPanel3(){
+		JPanel optionsPanel = new JPanel();
+		optionsPanel.setSize(new Dimension(200, 50));
+		optionsPanel.setLocation(new Point(975,275));
+
+		communcationText = new JTextArea("Communication: ");
+		optionsPanel.add(communcationText);
 
 		communication = new JButton("Off");
-		panel.add(communication);
+		optionsPanel.add(communication);
 		communication.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				if(communication.getText().equals("Off")){
@@ -259,21 +313,28 @@ public class GUI extends JFrame {
 				}
 			}
 		});
+		return optionsPanel;
+	}
 
+	private Component optionsPanel4(){
+		JPanel optionsPanel = new JPanel();
+		optionsPanel.setSize(new Dimension(200, 50));
+		optionsPanel.setLocation(new Point(975, 325));
 
-		trafficlightsText = new JTextArea("Traffic lights are: ");
-		panel.add(trafficlightsText);
+		trafficlightsText = new JTextArea("Traffic Lights: ");
+		optionsPanel.add(trafficlightsText);
 
 		trafficlights = new JButton("On");
-		panel.add(trafficlights);
+		optionsPanel.add(trafficlights);
 		trafficlights.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
+			public void actionPerformed(ActionEvent arg0){
 				if(trafficlights.getText().equals("Off")){
 					trafficlights.setText("On");
 					Board.setTrafficLights();
 					Board.reset();
 
-				} else {
+				}
+				else{
 					trafficlights.setText("Off");
 					Board.setTrafficLights();
 					Board.reset();
@@ -282,72 +343,51 @@ public class GUI extends JFrame {
 			}
 		});
 
-		return panel;
+		return optionsPanel;
 	}
 
-	private Component legendPanel(){
-		JPanel legendPanel = new JPanel();
-		legendPanel.setSize(new Dimension(150, 50));
-		legendPanel.setLocation(new Point(1000,50));
 
-		legend1 = new JTextArea("Autonomous Cars:");
-		legendPanel.add(legend1);
-		Legend l1 = new Legend();
-		l1.color = Color.blue;
-		legendPanel.add(l1);
-
-		legend2 = new JTextArea("Normal Cars:");
-		legendPanel.add(legend2);
-		Legend l2 = new Legend();
-		l2.color = Color.magenta;
-		legendPanel.add(l2);
-
-		return legendPanel;
-	}
-
-	private Component metricsPanel1(){
+	private Component metricsPanel0(){
 		JPanel metricsPanel = new JPanel();
-		metricsPanel.setSize(new Dimension(150, 200));
-		metricsPanel.setLocation(new Point(1000,100));
-
-		introductionText = new JTextArea("Average steps stopped:");
-		metricsPanel.add(introductionText);
-
-		allmediantext = new JTextArea("AllCars:");
-		allmedian = new JTextArea("yo");
-		metricsPanel.add(allmediantext);
-		metricsPanel.add(allmedian);
-
-		automediantext = new JTextArea("Autonomous:");
-		automedian = new JTextArea("yo");
-		metricsPanel.add(automediantext);
-		metricsPanel.add(automedian);
-
-		normmediantext = new JTextArea("Normal:");
-		normmedian = new JTextArea("yo");
-		metricsPanel.add(normmediantext);
-		metricsPanel.add(normmedian);
-
-		return metricsPanel;
-	}
-
-	private Component metricsPanel2(){
-		JPanel metricsPanel = new JPanel();
-		metricsPanel.setSize(new Dimension(150, 200));
-		metricsPanel.setLocation(new Point(1000,300));
+		metricsPanel.setSize(new Dimension(200, 30));
+		metricsPanel.setLocation(new Point(975,460));
 
 		introductionText2 = new JTextArea("Ticks per distance:");
 		metricsPanel.add(introductionText2);
+		return metricsPanel;
+	}
+
+
+	private Component metricsPanel1(){
+		JPanel metricsPanel = new JPanel();
+		metricsPanel.setSize(new Dimension(200, 30));
+		metricsPanel.setLocation(new Point(975,490));
 
 		allmediantext2 = new JTextArea("AllCars:");
 		allmedian2 = new JTextArea("yo");
 		metricsPanel.add(allmediantext2);
 		metricsPanel.add(allmedian2);
 
+		return metricsPanel;
+	}
+
+	private Component metricsPanel2(){
+		JPanel metricsPanel = new JPanel();
+		metricsPanel.setSize(new Dimension(200, 30));
+		metricsPanel.setLocation(new Point(975,520));
+
 		automediantext2 = new JTextArea("Autonomous:");
 		automedian2 = new JTextArea("yo");
 		metricsPanel.add(automediantext2);
 		metricsPanel.add(automedian2);
+
+		return metricsPanel;
+	}
+
+	private Component metricsPanel3(){
+		JPanel metricsPanel = new JPanel();
+		metricsPanel.setSize(new Dimension(200, 30));
+		metricsPanel.setLocation(new Point(975,550));
 
 		normmediantext2 = new JTextArea("Normal:");
 		normmedian2 = new JTextArea("yo");
@@ -356,6 +396,5 @@ public class GUI extends JFrame {
 
 		return metricsPanel;
 	}
-
 
 }

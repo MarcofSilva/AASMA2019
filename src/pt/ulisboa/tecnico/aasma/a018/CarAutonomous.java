@@ -13,7 +13,7 @@ public class CarAutonomous extends Car {
     private Point destination = null;
 
     public CarAutonomous(Point point){
-        super(point, Color.BLUE);
+        super(point, Color.CYAN);
         Board.incAutonomous();
     }
 

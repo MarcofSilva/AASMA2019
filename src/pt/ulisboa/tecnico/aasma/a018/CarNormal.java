@@ -155,7 +155,9 @@ public class CarNormal extends Car {
                     if(!(Board.getBlock(ahead) instanceof RoadCurveBlock))
                         rotateLeft();
                     else {
-                        if (!Board.isEmpty(ahead)) ;
+                        if (!Board.isEmpty(ahead)){
+                            stay();
+                        }
                         else
                             moveAhead(ahead);
                     }
@@ -164,13 +166,17 @@ public class CarNormal extends Car {
                     if((Board.getBlock(ahead) instanceof RoadCurveBlock))
                         rotateRight();
                     else {
-                        if(!Board.isEmpty(ahead));
+                        if (!Board.isEmpty(ahead)){
+                            stay();
+                        }
                         else
                             moveAhead(ahead);
                     }
                     break;
                 case "continue":
-                    if(!Board.isEmpty(ahead));
+                    if (!Board.isEmpty(ahead)){
+                        stay();
+                    }
                     else
                         moveAhead(ahead);
                     break;

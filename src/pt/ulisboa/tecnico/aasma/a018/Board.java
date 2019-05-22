@@ -51,7 +51,7 @@ public class Board {
 		int missingCars = nrCars - cars.size();
 		if(missingCars > 0){
 			Collections.shuffle(spawnPoints);
-			for(int i = 0; i < missingCars && i < 8; i++){
+			for(int i = 0; i < missingCars && i < spawnPoints.size(); i++){
 				Object obj = Board.getObject(spawnPoints.get(i));
 				if(obj != null){
 					continue;

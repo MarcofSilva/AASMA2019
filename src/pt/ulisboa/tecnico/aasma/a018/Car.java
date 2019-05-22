@@ -17,10 +17,11 @@ public abstract class Car extends Object {
 	public Color color;
 	protected Random random;
 	protected int totalTicks;
-	protected int totalStepsGiven;//ticks spent rotating or moving forward
 	protected int totaldistance; // ticks that actually moved
-	protected String decision;
-	protected String myID;
+	protected int totalActionsTaken; // ticks that he didnt stay still
+
+	/*protected String decision;
+	protected String myID;*/
 
 	public Car(Point point, int direction, Color color){
 		super(color, point);
@@ -50,11 +51,27 @@ public abstract class Car extends Object {
 	/**** B: sensors ****/
 	/********************/
 
-	protected double getStepsStopped(){
-		return ((totalTicks - totalStepsGiven)/totaldistance)*100;
+	protected float getStepsStopped(){
+		float metric = ((totalTicks - totalActionsTaken)/(float)totaldistance)*100;
+		return metric;
 	}
+
 	protected boolean isGreen(Point point){
-		TrafficLight tf = (TrafficLight) Board.getObject(point);
+		Point trafficLightLocal = new Point(point.x, point.y);
+		switch(direction){
+			case 0:
+				trafficLightLocal.y--;
+				break;
+			case 90:
+				trafficLightLocal.x--;
+				break;
+			case 180:
+				trafficLightLocal.y++;
+				break;
+			default:
+				trafficLightLocal.x++;
+		}
+		TrafficLight tf = (TrafficLight) Board.getObject(trafficLightLocal);
 		if(tf != null) {
 			return tf.getColor() == Color.green;
 		}
@@ -91,13 +108,13 @@ public abstract class Car extends Object {
 	
 	/* Rotate agent to right */
 	public void rotateRight() {
-		totalStepsGiven++;
+		totalActionsTaken++;
 		direction = (direction+90)%360;
 	}
 	
 	/* Rotate agent to left */
 	public void rotateLeft() {
-		totalStepsGiven++;
+		totalActionsTaken++;
 		int aux  = direction-90;
 		if(aux < 0){
 			aux = 360 + aux;
@@ -108,7 +125,7 @@ public abstract class Car extends Object {
 	/* Move agent forward */
 	abstract void stay();
 	abstract void agentDecision();
-	abstract void signIntoIntersection();
+	//abstract void signIntoIntersection();
 
 	
 	/**********************/
@@ -123,6 +140,29 @@ public abstract class Car extends Object {
 			case 90: newpoint.y--; break;
 			case 180: newpoint.x--; break;
 			default: newpoint.y++;
+		}
+		return newpoint;
+	}
+
+	protected Point twoaheadPosition(){
+		Point newpoint = new Point(point.x,point.y);
+		switch(direction) {
+			case 0: {
+				newpoint.x = newpoint.x + 2;
+				break;
+			}
+			case 90: {
+				newpoint.y = newpoint.y - 2;
+				break;
+			}
+			case 180: {
+				newpoint.x = newpoint.x - 2;
+				break;
+			}
+			default: {
+				newpoint.y = newpoint.y + 2;
+				break;
+			}
 		}
 		return newpoint;
 	}

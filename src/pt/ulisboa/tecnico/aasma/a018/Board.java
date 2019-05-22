@@ -1,8 +1,6 @@
 package pt.ulisboa.tecnico.aasma.a018;
 
 
-import org.omg.CORBA.PUBLIC_MEMBER;
-
 import java.awt.*;
 import java.util.*;
 import java.util.List;
@@ -21,16 +19,17 @@ public class Board {
 	private static List<Point> spawnPoints = new ArrayList<>();
 	private static List<Point> deSpawnPoints = new ArrayList<>();
 	private static List<Car> carsToRemove = new ArrayList<>();
-	private static List<IntersectionManager> intersectManagers = new ArrayList<>();
+	//private static List<IntersectionManager> intersectManagers = new ArrayList<>();
 
 	private static boolean TRAFFICLIGHTS = true;
-	public static int nX = 30, nY = 30, nrCars, totalCarCounter, percentCars = 50;
-	public static double median = 0.0;
+	public static int nX = 30, nY = 30, nrCars, totalCarCounter,totalACarCounter, totalNcar, percentCars = 50;
+	public static double medianAll = 0.0, medianNormal = 0.0, medianAuto = 0.0;
 	private static Block[][] board;
 	private static Object[][] objects;
 	private static List<Car> cars;
 	private static List<TrafficLight> trafficLights;
 	private static Intersection[][] intersections;
+	public static boolean communication = false;
 
 	public static void incAutonomous(){
 		autonomousCount++;
@@ -38,7 +37,7 @@ public class Board {
 	public static void incNormal(){
 		normalCount++;
 	}
-
+	public static void setCommunication(){communication = !communication;}
 	public static void notifyPercent(int percent){
 		percentCars = percent;
 	}
@@ -192,50 +191,44 @@ public class Board {
 
 	private static void initializeIntersections(){
 		//3 way
-		IntersectionManager manager = new IntersectionManager();
-		intersections[8][14] = new Intersection(new Point(8,14),270, Arrays.asList(new String[]{"F", "R"}),manager,false);
-		intersections[7][17] = new Intersection(new Point(7,17),90, Arrays.asList(new String[]{"F", "L"}),manager,false);
-		intersections[9][16] = new Intersection(new Point(9,16),180, Arrays.asList(new String[]{"R", "L"}),manager, false);
-		intersectManagers.add(manager);
+		intersections[8][14] = new Intersection(new Point(8,14),270, Arrays.asList(new String[]{"F", "R"}),false);
+		intersections[7][17] = new Intersection(new Point(7,17),90, Arrays.asList(new String[]{"F", "L"}),false);
+		intersections[9][16] = new Intersection(new Point(9,16),180, Arrays.asList(new String[]{"R", "L"}), false);
 
 		// 3 way
-		manager = new IntersectionManager();
-		intersections[22][8] = new Intersection(new Point(22,8),0, Arrays.asList(new String[]{"F", "L"}),manager, false);
-		intersections[23][10] = new Intersection(new Point(23,10),90, Arrays.asList(new String[]{"R", "L"}),manager, false);
-		intersections[25][9] = new Intersection(new Point(25,9),180, Arrays.asList(new String[]{"F", "R"}),manager, false);
-		intersectManagers.add(manager);
+		intersections[22][8] = new Intersection(new Point(22,8),0, Arrays.asList(new String[]{"F", "L"}), false);
+		intersections[23][10] = new Intersection(new Point(23,10),90, Arrays.asList(new String[]{"R", "L"}), false);
+		intersections[25][9] = new Intersection(new Point(25,9),180, Arrays.asList(new String[]{"F", "R"}),false);
 
 		//4 way
-		manager = new IntersectionManager();
-		intersections[6][4] = new Intersection(new Point(6,4),0, Arrays.asList(new String[]{"F", "R", "L"}),manager, TRAFFICLIGHTS);
-		intersections[7][6] = new Intersection(new Point(7,6),90, Arrays.asList(new String[]{"F", "R", "L"}),manager, TRAFFICLIGHTS);
-		intersections[8][3] = new Intersection(new Point(8,3),270, Arrays.asList(new String[]{"F", "R", "L"}),manager, TRAFFICLIGHTS);
-		intersections[9][5] = new Intersection(new Point(9,5),180, Arrays.asList(new String[]{"F", "R", "L"}),manager, TRAFFICLIGHTS);
-		intersectManagers.add(manager);
+		intersections[6][4] = new Intersection(new Point(6,4),0, Arrays.asList(new String[]{"F", "R", "L"}),TRAFFICLIGHTS);
+		intersections[7][6] = new Intersection(new Point(7,6),90, Arrays.asList(new String[]{"F", "R", "L"}),TRAFFICLIGHTS);
+		intersections[8][3] = new Intersection(new Point(8,3),270, Arrays.asList(new String[]{"F", "R", "L"}),TRAFFICLIGHTS);
+		intersections[9][5] = new Intersection(new Point(9,5),180, Arrays.asList(new String[]{"F", "R", "L"}),TRAFFICLIGHTS);
 
 		//4 way
-		manager = new IntersectionManager();
-		intersections[6][23] = new Intersection(new Point(6,23),0, Arrays.asList(new String[]{"F", "R", "L"}),manager, TRAFFICLIGHTS);
-		intersections[7][25] = new Intersection(new Point(7,25),90, Arrays.asList(new String[]{"F", "R", "L"}),manager, TRAFFICLIGHTS);
-		intersections[8][22] = new Intersection(new Point(8,22),270, Arrays.asList(new String[]{"F", "R", "L"}),manager, TRAFFICLIGHTS);
-		intersections[9][24] = new Intersection(new Point(9,24),180, Arrays.asList(new String[]{"F", "R", "L"}),manager, TRAFFICLIGHTS);
-		intersectManagers.add(manager);
+		intersections[6][23] = new Intersection(new Point(6,23),0, Arrays.asList(new String[]{"F", "R", "L"}), TRAFFICLIGHTS);
+		intersections[7][25] = new Intersection(new Point(7,25),90, Arrays.asList(new String[]{"F", "R", "L"}), TRAFFICLIGHTS);
+		intersections[8][22] = new Intersection(new Point(8,22),270, Arrays.asList(new String[]{"F", "R", "L"}), TRAFFICLIGHTS);
+		intersections[9][24] = new Intersection(new Point(9,24),180, Arrays.asList(new String[]{"F", "R", "L"}), TRAFFICLIGHTS);
 
 		//4 way
-		manager = new IntersectionManager();
-		intersections[22][23] = new Intersection(new Point(22,23),0, Arrays.asList(new String[]{"F", "R", "L"}),manager, TRAFFICLIGHTS);
-		intersections[23][25] = new Intersection(new Point(23,25),90, Arrays.asList(new String[]{"F", "R", "L"}),manager, TRAFFICLIGHTS);
-		intersections[24][22] = new Intersection(new Point(24,22),270, Arrays.asList(new String[]{"F", "R", "L"}),manager, TRAFFICLIGHTS);
-		intersections[25][24] = new Intersection(new Point(25,24),180, Arrays.asList(new String[]{"F", "R", "L"}),manager, TRAFFICLIGHTS);
-		intersectManagers.add(manager);
+		intersections[22][23] = new Intersection(new Point(22,23),0, Arrays.asList(new String[]{"F", "R", "L"}), TRAFFICLIGHTS);
+		intersections[23][25] = new Intersection(new Point(23,25),90, Arrays.asList(new String[]{"F", "R", "L"}), TRAFFICLIGHTS);
+		intersections[24][22] = new Intersection(new Point(24,22),270, Arrays.asList(new String[]{"F", "R", "L"}), TRAFFICLIGHTS);
+		intersections[25][24] = new Intersection(new Point(25,24),180, Arrays.asList(new String[]{"F", "R", "L"}), TRAFFICLIGHTS);
 	}
 
 	public static void initialize() {
 		initializeLists();
 		autonomousCount = 0;
 		normalCount = 0;
-		median = 0.0;
+		medianAll = 0.0;
+		medianNormal = 0.0;
+		medianAuto = 0.0;
 		totalCarCounter = 0;
+		totalACarCounter = 0;
+		totalNcar = 0;
 		board = new Block[nX][nY];
 		initializeMap();
 		intersections = new Intersection[nX][nY];
@@ -248,11 +241,11 @@ public class Board {
 		}
 	}
 
-	public static void resetManagers(){
+	/*public static void resetManagers(){
 		for(IntersectionManager im : intersectManagers){
 			im.reset();
 		}
-	}
+	}*/
 	
 	/****************************
 	 ***** B: BOARD METHODS *****
@@ -324,7 +317,7 @@ public class Board {
 	public static void reset() {
 		removeObjects();
 		initialize();
-		resetManagers();
+		//resetManagers();
 		GUI.displayBoard();
 		displayObjects();	
 		GUI.update();
@@ -336,6 +329,10 @@ public class Board {
 		for(TrafficLight tl : trafficLights){
 			tl.tick();
 		}
+
+		for(Car a : cars){
+			a.agentDecision();
+		}/*
 		for(Car a : cars){
 			a.signIntoIntersection();
 		}
@@ -344,7 +341,7 @@ public class Board {
 		}
 		for(Car a : cars){
 			a.agentDecision();
-		}
+		}*/
 		removeCars();
 		checkNumberOfCars();
 		displayObjects();
@@ -374,14 +371,20 @@ public class Board {
 		carsToRemove.clear();
 	}
 	public static void removeCar(Car car){
-        median = (median*totalCarCounter + car.getStepsStopped())/(totalCarCounter+1);
+		float d = car.getStepsStopped();
+        medianAll = (medianAll*totalCarCounter + d)/(totalCarCounter+1);
 	    totalCarCounter++;
 		carsToRemove.add(car);
 		if(car instanceof CarAutonomous){
 			autonomousCount--;
+			medianAuto = (medianAuto*totalACarCounter + d)/(totalACarCounter+1);
+			totalACarCounter++;
+
 		}
 		else {
 			normalCount--;
+			medianNormal = (medianNormal*totalNcar + d)/(totalNcar+1);
+			totalNcar++;
 		}
 	}
 	public static void spawnCar(Car car){

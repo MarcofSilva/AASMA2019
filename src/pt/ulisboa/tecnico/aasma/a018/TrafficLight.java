@@ -43,6 +43,7 @@ public class TrafficLight extends Object {
 
     public void tick(){
         ticksLeft--;
+
         if(ticksLeft == 0){
             if(color == Color.green){
                 color = Color.yellow;

@@ -21,11 +21,14 @@ public class GUI extends JFrame {
 	
 	static JTextField speed;
 	static JPanel boardPanel;
-	static JButton run, reset, step;
+	static JButton run, reset, step, communication;
 	static JSlider percentCars;
 	static JTextField nrCars;
 	private int nX, nY;
-	static JTextArea mediantext, median;
+	static JTextArea allmediantext, allmedian;
+	static JTextArea automediantext, automedian;
+	static JTextArea normmediantext, normmedian;
+	static JTextArea introductionText, communcationText;
 
 	static final int CARS_MIN = 0;
 	static final int CARS_MAX = 100;
@@ -35,7 +38,7 @@ public class GUI extends JFrame {
 
 		private static final long serialVersionUID = 1L;
 		
-		public List<Object> objects = new ArrayList<Object>();
+		public List<Object> objects = new ArrayList<>();
 		
         @Override
         protected void paintComponent(Graphics g) {
@@ -62,9 +65,10 @@ public class GUI extends JFrame {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setLayout(null);
 		//size of the window to show the board
-		setSize(1000, 1000);
+		setSize(1200, 1000);
 		//button panel on top
 		add(createButtonPanel());
+		add(metricsPanel());
 
 		Board.initialize();
 		Board.associateGUI(this);
@@ -118,14 +122,16 @@ public class GUI extends JFrame {
 	}
 
 	public void update() {
-		median.setText(String.format("%.2f",Board.median));
+		allmedian.setText(String.format("%.2f",Board.medianAll));
+		automedian.setText(String.format("%.2f",Board.medianAuto));
+		normmedian.setText(String.format("%.2f",Board.medianNormal));
 		repaint();
 	}
 
 
 	private Component createButtonPanel() {
 		JPanel panel = new JPanel();
-		panel.setSize(new Dimension(900,50));
+		panel.setSize(new Dimension(1150,50));
 		panel.setLocation(new Point(0,0));
 
 		step = new JButton("Step");
@@ -210,11 +216,52 @@ public class GUI extends JFrame {
 		percentCars.setPaintLabels(true);
 		panel.add(percentCars);
 
-		mediantext = new JTextArea("Average steps stopped");
-		median = new JTextArea("yo");
-		panel.add(mediantext);
-		panel.add(median);
+		communcationText = new JTextArea("Communication in Autonomous Cars: ");
+		panel.add(communcationText);
+
+		communication = new JButton("Off");
+		panel.add(communication);
+		communication.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				if(communication.getText().equals("Off")){
+					communication.setText("On");
+					Board.setCommunication();
+
+				} else {
+					communication.setText("Off");
+					Board.setCommunication();
+				}
+			}
+		});
+
 		return panel;
 	}
+
+	private Component metricsPanel(){
+		JPanel metricsPanel = new JPanel();
+		metricsPanel.setSize(new Dimension(150, 900));
+		metricsPanel.setLocation(new Point(1000,100));
+
+		introductionText = new JTextArea("Average steps stopped:");
+		metricsPanel.add(introductionText);
+
+		allmediantext = new JTextArea("AllCars:");
+		allmedian = new JTextArea("yo");
+		metricsPanel.add(allmediantext);
+		metricsPanel.add(allmedian);
+
+		automediantext = new JTextArea("Autonomous:");
+		automedian = new JTextArea("yo");
+		metricsPanel.add(automediantext);
+		metricsPanel.add(automedian);
+
+		normmediantext = new JTextArea("Normal:");
+		normmedian = new JTextArea("yo");
+		metricsPanel.add(normmediantext);
+		metricsPanel.add(normmedian);
+
+		return metricsPanel;
+	}
+
 
 }

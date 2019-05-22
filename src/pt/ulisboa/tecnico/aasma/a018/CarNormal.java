@@ -6,14 +6,10 @@ import java.util.List;
 
 public class CarNormal extends Car {
     private Point ahead;
-    private IntersectionManager intersectManager;
+    //private IntersectionManager intersectManager;
     private List<Point> path = new ArrayList<>();
-    private boolean hasWaitedInGreen = false;
+    //private boolean hasWaitedInGreen = false;
     private boolean delay = false;
-
-    private List<Point> pathLog = new ArrayList<>();
-    private List<Point> pathManagerLog = new ArrayList<>();
-    private String pathOpLog = "";
 
     public CarNormal(Point point){
         super(point, Color.MAGENTA);
@@ -42,24 +38,15 @@ public class CarNormal extends Car {
         return (TrafficLight) Board.getObject(trafficLightLocal);
     }
 
-    public void calcPath(){
+
+    public ArrayList<Point> calcPath(){
         path.clear();
         Intersection intersectAux = Board.getIntersection(point);
-        if(intersectAux.gettrafficLights()){
-            TrafficLight tf = calcTF();
-            int aux = tf.getTicksTilGreen();
-            for(int i = 0; i < aux; i++){
-                path.add(new Point(point.x, point.y));
-            }
-            if(aux > 0 ){
-                path.add(new Point(point.x, point.y));
-            }
-        }
-        path.addAll(intersectAux.calcPathIntersect(point, intersectAux.getDestination(decision), direction));
-        pathLog.clear();
-        pathLog.addAll(path);
-        pathOpLog = "";
+        List<String> possibleWays = intersectAux.getPossibleExits();
+        int index = random.nextInt(possibleWays.size());
+        return intersectAux.calcPathIntersect(point, intersectAux.getDestination(possibleWays.get(index)), direction);
     }
+/*
     public void signIntoIntersection(){
         ahead = aheadPosition();
         if(intoIntersection(ahead) && path.size() == 0){
@@ -78,12 +65,144 @@ public class CarNormal extends Car {
                 intersectManager.updatePath(myID, path);
             }
         }
-    }
+    }*/
 
     /**********************
      **** A: decision *****
      **********************/
 
+    public void agentDecision() {
+        ahead = aheadPosition();
+        this.totalTicks++;
+        //checks if i can move ahead
+
+        //has a path already
+        if(intoIntersection(ahead)){
+            if(path.size() == 0){
+                path = calcPath();
+            }
+        }
+        if(path.size() > 0){
+            if(intoIntersection(ahead)){
+                if(isGreen(point) && Board.isEmpty(ahead) && Board.isEmpty(twoaheadPosition())){
+                    if(comparePoints(path.get(0), ahead)){//TODO remove, here to debug, should not be necessary
+                        moveAhead(ahead);
+                    }
+                }
+                else {
+                    stay();
+                }
+            }
+            else {
+                if(comparePoints(path.get(0), ahead)){
+                    if(!Board.isEmpty(ahead)){
+                        stay();
+                    }
+                    else {
+                        moveAhead(ahead);
+                    }
+                }
+                else {
+                    path.remove(0);
+                    Point pointToRotate = path.get(0);
+                    if(direction == 270){
+                        if(pointToRotate.x > point.x){
+                            rotateRight();
+                        }
+                        else{
+                            rotateLeft();
+                        }
+                    }
+                    else if(direction == 90){
+                        if(pointToRotate.x > point.x){
+                            rotateLeft();
+                        }
+                        else{
+                            rotateRight();
+                        }
+                    }
+                    else if(direction == 0){
+                        if(pointToRotate.y > point.y){
+                            rotateLeft();
+                        }
+                        else{
+                            rotateRight();
+                        }
+                    }
+                    else{
+                        if(pointToRotate.y > point.y){
+                            rotateRight();
+                        }
+                        else{
+                            rotateLeft();
+                        }
+                    }
+                }
+            }
+        }
+        else if(inCurve()) {
+            switch (((RoadCurveBlock) Board.getBlock(point)).getAction()) {
+                case "left":
+                    if(!(Board.getBlock(ahead) instanceof RoadCurveBlock))
+                        rotateLeft();
+                    else {
+                        if (!Board.isEmpty(ahead)) ;
+                        else
+                            moveAhead(ahead);
+                    }
+                    break;
+                case "right":
+                    if((Board.getBlock(ahead) instanceof RoadCurveBlock))
+                        rotateRight();
+                    else {
+                        if(!Board.isEmpty(ahead));
+                        else
+                            moveAhead(ahead);
+                    }
+                    break;
+                case "continue":
+                    if(!Board.isEmpty(ahead));
+                    else
+                        moveAhead(ahead);
+                    break;
+            }
+        }
+        else if(!isRoad(ahead)) {
+            stay();
+        }
+
+        else if(!Board.isEmpty(ahead)){
+            stay();
+        }
+
+        else {
+            moveAhead(ahead);
+        }
+    }
+
+    public void moveAhead(Point ahead){
+        if(delay){
+            delay = false;
+            return;
+        }
+        if(path.size() > 0){
+            path.remove(0);
+        }
+        Board.updateEntityPosition(point, ahead);
+        this.totalActionsTaken++;
+        this.totaldistance++;
+        this.point = ahead;
+    }
+
+    public boolean comparePoints(Point p1, Point p2){
+        if(p1.x != p2.x){
+            return false;
+        }
+        return p1.y == p2.y;
+    }
+}
+
+/*
     public void agentDecision() {
         this.totalTicks++;
         ahead = aheadPosition();
@@ -211,23 +330,4 @@ public class CarNormal extends Car {
         }
     }
 
-    public void moveAhead(Point ahead){
-        if(delay){
-            delay = false;
-            if(path.size() == 0){
-                return;
-            }
-        }
-        Board.updateEntityPosition(point, ahead);
-        this.totalStepsGiven++;
-        this.point = ahead;
-        this.totaldistance++;
-    }
-
-    public boolean comparePoints(Point p1, Point p2){
-        if(p1.x != p2.x){
-            return false;
-        }
-        return p1.y == p2.y;
-    }
-}
+ */

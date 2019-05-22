@@ -13,11 +13,10 @@ public class Intersection {
     IntersectionManager manager;
     private boolean trafficLights = false;
 
-    public Intersection(Point location, int direction, List<String> exits, IntersectionManager manager, boolean trafficLights){
+    public Intersection(Point location, int direction, List<String> exits, boolean trafficLights){
         possibleDirections = exits;
         this.trafficLights = trafficLights;
 
-        this.manager = manager;
         for(String exit : exits){
             switch (exit){
                 case "F":
@@ -71,7 +70,7 @@ public class Intersection {
         }
     }
 
-    public List<Point> calcPathIntersect(Point start, Point end, int direction){
+    public ArrayList<Point> calcPathIntersect(Point start, Point end, int direction){
         Point location = new Point(start.x, start.y);
         Point destination = new Point(end.x, end.y);
         ArrayList<Point> path = new ArrayList<>();

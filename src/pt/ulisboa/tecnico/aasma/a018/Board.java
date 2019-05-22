@@ -63,7 +63,6 @@ public class Board {
 				}
 			}
 		}
-		System.out.println(cars.size());
 	}
 	private static void buildHorizontalroad(int lane, int startPoint, int lenght){
 		for(int k = 0; k<2; k++){

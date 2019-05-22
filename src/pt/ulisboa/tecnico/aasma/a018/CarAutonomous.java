@@ -33,22 +33,22 @@ public class CarAutonomous extends Car {
         return newpoint;
     }
 
-    public TrafficLight calcTF(){
-        Point trafficLightLocal = new Point(point.x, point.y);
+    public Point calcSide(){
+        Point newPoint = new Point(point.x, point.y);
         switch(direction){
             case 0:
-                trafficLightLocal.y--;
+                newPoint.y++;
                 break;
             case 90:
-                trafficLightLocal.x--;
+                newPoint.x++;
                 break;
             case 180:
-                trafficLightLocal.y++;
+                newPoint.y--;
                 break;
             default:
-                trafficLightLocal.x++;
+                newPoint.x--;
         }
-        return (TrafficLight) Board.getObject(trafficLightLocal);
+        return newPoint;
     }
 
     public Point getConflictingPosition(){
@@ -133,10 +133,6 @@ public class CarAutonomous extends Car {
             moveAhead(ahead);
             if(path.size() > 0){
                 path.remove(0);
-                if(path.size() == 0){ //TODO idk if this is usefull because decision is always defines when entering intersect and i only ask for it when in intersect
-                    decision = "";
-                    destination = null;
-                }
             }
         }
         else {
@@ -147,9 +143,6 @@ public class CarAutonomous extends Car {
         ahead = aheadPosition();
         this.totalTicks++;
 
-        //checks if i can move ahead
-
-        //has a path already
         if(intoIntersection(ahead)){
             if(path.size() == 0){
                 path = calcPath();
@@ -168,19 +161,20 @@ public class CarAutonomous extends Car {
                             moveAheadConditionally();
                         }
                         else {
-                            Car car = (Car) Board.getObject(twoahead); //TODO check if there is no prob with this
+                            Car car = (Car) Board.getObject(twoahead);
                             if(car instanceof CarNormal){
                                 stay();
                             }
                             else {
                                 CarAutonomous carAuto = (CarAutonomous) car;
-                                //if i am turning right, i can do it always
+                                //with traffic lights, deadlocks are way easier to prevent, so we separate it
                                 if(Board.trafficLightState){
+                                    //if he turned right we dont see it, so there is only front and left
                                     if(carAuto.getDecision().equals("F")){
                                         moveAheadConditionally();
                                     }
                                     else {
-                                        Car conflictCar = (Car) Board.getObject(getConflictingPosition()); //TODO check if there is no prob with this
+                                        Car conflictCar = (Car) Board.getObject(getConflictingPosition());
                                         if(conflictCar == null){
                                             moveAheadConditionally();
                                         }
@@ -204,8 +198,8 @@ public class CarAutonomous extends Car {
                                         moveAheadConditionally();
                                     }
                                     else {
-                                        Car conflictCar = (Car) Board.getObject(getConflictingPosition()); //TODO check if there is no prob with this
-                                        if(car == null){
+                                        Car conflictCar = (Car) Board.getObject(getConflictingPosition());
+                                        if(conflictCar == null){
                                             moveAheadConditionally();
                                         }
                                         if(conflictCar instanceof CarNormal){
@@ -213,17 +207,15 @@ public class CarAutonomous extends Car {
                                         }
                                         else {
                                             CarAutonomous conflictAuto = (CarAutonomous) conflictCar;
-                                            if(comparePoints(conflictAuto.ahead, ahead) || comparePoints(conflictAuto.ahead, conflictAuto.point)){
-                                                stay();
+                                            if(comparePoints(calcSide(), conflictAuto.getDestination())){
+                                                moveAheadConditionally();
                                             }
                                             else {
-                                                moveAheadConditionally();
+                                                stay();
                                             }
                                         }
                                     }
                                 }
-
-                                //if the one in front doesnt want to turn left, there wont be a problem
                             }
                         }
 
@@ -250,7 +242,7 @@ public class CarAutonomous extends Car {
                 }
             }
             else {
-                if(comparePoints(path.get(0), ahead)){//TODO
+                if(comparePoints(path.get(0), ahead)){
                     moveAheadConditionally();
                 }
                 else {
@@ -291,7 +283,6 @@ public class CarAutonomous extends Car {
                 }
             }
         }
-        //TODO clean this, to much repeated code
         else if(inCurve()) {
         switch (((RoadCurveBlock) Board.getBlock(point)).getAction()) {
                 case "left":

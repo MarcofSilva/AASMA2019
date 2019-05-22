@@ -7,12 +7,12 @@ public class RoadCurveBlock extends Block {
 
     private String _action;
 
-    public RoadCurveBlock(Color color, AbstractBorder border, String action) {
+    public RoadCurveBlock(Color color, AbstractBorder border, String action){
         super(color, border);
         _action = action;
     }
 
-    public String getAction() {
+    public String getAction(){
         return _action;
     }
 }

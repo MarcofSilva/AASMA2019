@@ -10,63 +10,60 @@ public class Intersection {
 
     Map<String, Point> exitsByDirection = new HashMap<>();
     List<String> possibleDirections;
-    IntersectionManager manager;
-    private boolean trafficLights = false;
 
-    public Intersection(Point location, int direction, List<String> exits, boolean trafficLights){
+    public Intersection(Point location, int direction, List<String> exits){
         possibleDirections = exits;
-        this.trafficLights = trafficLights;
 
         for(String exit : exits){
-            switch (exit){
+            switch(exit){
                 case "F":
-                    exitsByDirection.put("F",calcExitF(location, direction));
+                    exitsByDirection.put("F", calcExitF(location, direction));
                     break;
                 case "R":
-                    exitsByDirection.put("R",calcExitR(location, direction));
+                    exitsByDirection.put("R", calcExitR(location, direction));
                     break;
                 default:
-                    exitsByDirection.put("L",calcExitL(location, direction));
+                    exitsByDirection.put("L", calcExitL(location, direction));
             }
         }
     }
 
     private Point calcExitF(Point location, int direction){
-        switch(direction) {
+        switch(direction){
             case 0:
-                return new Point(location.x+3, location.y);
+                return new Point(location.x + 3, location.y);
             case 90:
-                return new Point(location.x, location.y-3);
+                return new Point(location.x, location.y - 3);
             case 180:
-                return new Point(location.x-3, location.y);
+                return new Point(location.x - 3, location.y);
             default:
-                return new Point(location.x, location.y+3);
+                return new Point(location.x, location.y + 3);
         }
     }
 
     private Point calcExitR(Point location, int direction){
-        switch(direction) {
+        switch(direction){
             case 0:
-                return new Point(location.x+1, location.y-1);
+                return new Point(location.x + 1, location.y - 1);
             case 90:
-                return new Point(location.x-1, location.y-1);
+                return new Point(location.x - 1, location.y - 1);
             case 180:
-                return new Point(location.x-1, location.y+1);
+                return new Point(location.x - 1, location.y + 1);
             default:
-                return new Point(location.x+1, location.y+1);
+                return new Point(location.x + 1, location.y + 1);
         }
     }
 
     private Point calcExitL(Point location, int direction){
-        switch(direction) {
+        switch(direction){
             case 0:
-                return new Point(location.x+2, location.y+2);
+                return new Point(location.x + 2, location.y + 2);
             case 90:
-                return new Point(location.x+2, location.y-2);
+                return new Point(location.x + 2, location.y - 2);
             case 180:
-                return new Point(location.x-2, location.y-2);
+                return new Point(location.x - 2, location.y - 2);
             default:
-                return new Point(location.x-2, location.y+2);
+                return new Point(location.x - 2, location.y + 2);
         }
     }
 
@@ -81,7 +78,7 @@ public class Intersection {
                 if(location.x > destination.x){
                     location.x--;
                 }
-                else {
+                else{
                     location.x++;
 
                 }
@@ -94,20 +91,20 @@ public class Intersection {
                 if(location.y > destination.y){
                     location.y--;
                 }
-                else {
+                else{
                     location.y++;
 
                 }
                 path.add(new Point(location.x, location.y));
             }
         }
-        //going vertical, equalize x
-        else {
+        //going vertical, equalize y
+        else{
             while(location.y != destination.y){
                 if(location.y > destination.y){
                     location.y--;
                 }
-                else {
+                else{
                     location.y++;
 
                 }
@@ -120,7 +117,7 @@ public class Intersection {
                 if(location.x > destination.x){
                     location.x--;
                 }
-                else {
+                else{
                     location.x++;
 
                 }
@@ -136,14 +133,6 @@ public class Intersection {
 
     public List<String> getPossibleExits(){
         return possibleDirections;
-    }
-
-    public boolean gettrafficLights(){
-        return trafficLights;
-    }
-
-    public IntersectionManager getManager(){
-        return manager;
     }
 
 }

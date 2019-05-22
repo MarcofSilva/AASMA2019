@@ -1,23 +1,24 @@
 package pt.ulisboa.tecnico.aasma.a018;
 
 import javax.swing.border.AbstractBorder;
-import java.awt.Color;
+import java.awt.*;
 
 public class Block {
 
-	public Color color;
-	public AbstractBorder border;
+    public Color color;
+    public AbstractBorder border;
 
 
-	public Block(Color color, AbstractBorder border) {
-		this.color = color;
-		this.border = border;
-	}
-	public Color getColor(){
-		return this.color;
-	}
+    public Block(Color color, AbstractBorder border){
+        this.color = color;
+        this.border = border;
+    }
 
-	public AbstractBorder getBorder(){
-		return this.border;
-	}
+    public Color getColor(){
+        return this.color;
+    }
+
+    public AbstractBorder getBorder(){
+        return this.border;
+    }
 }

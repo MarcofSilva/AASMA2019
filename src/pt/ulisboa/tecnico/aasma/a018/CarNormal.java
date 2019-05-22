@@ -6,40 +6,19 @@ import java.util.List;
 
 public class CarNormal extends Car {
     private Point ahead;
-    //private IntersectionManager intersectManager;
     private List<Point> path = new ArrayList<>();
-    //private boolean hasWaitedInGreen = false;
     private boolean delay = false;
     private String decision = "";
 
 
     public CarNormal(Point point){
         super(point, Color.MAGENTA);
-        Board.incNormal();
     }
 
     @Override
     void stay(){
         delay = true;
     }
-    public TrafficLight calcTF(){
-        Point trafficLightLocal = new Point(point.x, point.y);
-        switch(direction){
-            case 0:
-                trafficLightLocal.y--;
-                break;
-            case 90:
-                trafficLightLocal.x--;
-                break;
-            case 180:
-                trafficLightLocal.y++;
-                break;
-            default:
-                trafficLightLocal.x++;
-        }
-        return (TrafficLight) Board.getObject(trafficLightLocal);
-    }
-
 
     public ArrayList<Point> calcPath(){
         path.clear();
@@ -49,37 +28,11 @@ public class CarNormal extends Car {
         decision = possibleWays.get(index);
         return intersectAux.calcPathIntersect(point, intersectAux.getDestination(decision), direction);
     }
-/*
-    public void signIntoIntersection(){
-        ahead = aheadPosition();
-        if(intoIntersection(ahead) && path.size() == 0){
-            Intersection intersectAux = Board.getIntersection(point);
-            List<String> possibleWays = intersectAux.getPossibleExits();
-            int index = random.nextInt(possibleWays.size());
-            decision = possibleWays.get(index);
-            calcPath();
-            intersectManager = intersectAux.getManager();
-            myID = intersectManager.signInIntersection(path, this);
-        }
-        else if(intoIntersection(ahead)) {
-            if(Board.getIntersection(point).gettrafficLights() && calcTF().color == Color.YELLOW && hasWaitedInGreen){
-                hasWaitedInGreen = false;
-                calcPath();
-                intersectManager.updatePath(myID, path);
-            }
-        }
-    }*/
 
-    /**********************
-     **** A: decision *****
-     **********************/
-
-    public void agentDecision() {
+    public void agentDecision(){
         ahead = aheadPosition();
         this.totalTicks++;
-        //checks if i can move ahead
 
-        //has a path already
         if(intoIntersection(ahead)){
             if(path.size() == 0){
                 path = calcPath();
@@ -91,98 +44,62 @@ public class CarNormal extends Car {
                     if(decision.equals("R")){
                         moveAhead(ahead);
                     }
-                    else if(comparePoints(path.get(0), ahead) && Board.isEmpty(twoaheadPosition())){//TODO remove, here to debug, should not be necessary
+                    else if(comparePoints(path.get(0), ahead) && Board.isEmpty(twoaheadPosition())){
                         moveAhead(ahead);
                     }
-                    else {
+                    else{
                         stay();
                     }
                 }
-                else {
+                else{
                     stay();
                 }
             }
-            else {
+            else{
                 if(comparePoints(path.get(0), ahead)){
                     if(!Board.isEmpty(ahead)){
                         stay();
                     }
-                    else {
+                    else{
                         moveAhead(ahead);
                     }
                 }
-                else {
+                else{
                     path.remove(0);
                     Point pointToRotate = path.get(0);
-                    if(direction == 270){
-                        if(pointToRotate.x > point.x){
-                            rotateRight();
-                        }
-                        else{
-                            rotateLeft();
-                        }
-                    }
-                    else if(direction == 90){
-                        if(pointToRotate.x > point.x){
-                            rotateLeft();
-                        }
-                        else{
-                            rotateRight();
-                        }
-                    }
-                    else if(direction == 0){
-                        if(pointToRotate.y > point.y){
-                            rotateLeft();
-                        }
-                        else{
-                            rotateRight();
-                        }
-                    }
-                    else{
-                        if(pointToRotate.y > point.y){
-                            rotateRight();
-                        }
-                        else{
-                            rotateLeft();
-                        }
-                    }
+                    rotateAccordingly(pointToRotate);
                 }
             }
         }
-        else if(inCurve()) {
-            switch (((RoadCurveBlock) Board.getBlock(point)).getAction()) {
+        else if(inCurve()){
+            switch(((RoadCurveBlock) Board.getBlock(point)).getAction()){
                 case "left":
-                    if(!(Board.getBlock(ahead) instanceof RoadCurveBlock))
-                        rotateLeft();
-                    else {
-                        if (!Board.isEmpty(ahead)){
+                    if(!(Board.getBlock(ahead) instanceof RoadCurveBlock)) rotateLeft();
+                    else{
+                        if(!Board.isEmpty(ahead)){
                             stay();
                         }
-                        else
-                            moveAhead(ahead);
+                        else moveAhead(ahead);
                     }
                     break;
                 case "right":
-                    if((Board.getBlock(ahead) instanceof RoadCurveBlock))
-                        rotateRight();
-                    else {
-                        if (!Board.isEmpty(ahead)){
+                    if((Board.getBlock(ahead) instanceof RoadCurveBlock)) rotateRight();
+                    else{
+                        if(!Board.isEmpty(ahead)){
                             stay();
                         }
-                        else
-                            moveAhead(ahead);
+                        else moveAhead(ahead);
                     }
                     break;
                 case "continue":
-                    if (!Board.isEmpty(ahead)){
+                    if(!Board.isEmpty(ahead)){
                         stay();
                     }
-                    else
-                        moveAhead(ahead);
+                    else moveAhead(ahead);
                     break;
             }
         }
-        else if(!isRoad(ahead)) {
+        else if(!isRoad(ahead)){
             stay();
         }
 
@@ -190,7 +107,7 @@ public class CarNormal extends Car {
             stay();
         }
 
-        else {
+        else{
             moveAhead(ahead);
         }
     }

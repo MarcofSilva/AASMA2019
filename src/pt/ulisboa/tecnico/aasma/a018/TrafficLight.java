@@ -8,6 +8,7 @@ public class TrafficLight extends Object {
     private int yellowDurantionTick;
     private int greenDurantionTick;
     private int ticksLeft;
+
     public TrafficLight(Point position, int redDurationTick, int yellowDurantionTick, int greenDurantionTick, Color initial){
         super(initial, position);
         this.redDurationTick = redDurationTick;
@@ -16,29 +17,17 @@ public class TrafficLight extends Object {
         if(initial == Color.green){
             ticksLeft = greenDurantionTick;
         }
-        else if(initial == Color.red) {
+        else if(initial == Color.red){
             ticksLeft = redDurationTick;
             ticksLeft -= 5;
         }
-        else {
+        else{
             ticksLeft = yellowDurantionTick;
         }
     }
 
     public Color getColor(){
         return color;
-    }
-
-    public int getTicksTilGreen(){
-        if(color == Color.GREEN){
-            return 0;
-        }
-        else if(color == Color.yellow){
-            return ticksLeft + redDurationTick;
-        }
-        else {
-            return ticksLeft;
-        }
     }
 
     public void tick(){
@@ -53,7 +42,7 @@ public class TrafficLight extends Object {
                 color = Color.red;
                 ticksLeft = redDurationTick;
             }
-            else {
+            else{
                 color = Color.green;
                 ticksLeft = greenDurantionTick;
             }

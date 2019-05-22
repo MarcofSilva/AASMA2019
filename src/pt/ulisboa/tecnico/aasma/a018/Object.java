@@ -2,7 +2,7 @@ package pt.ulisboa.tecnico.aasma.a018;
 
 import java.awt.*;
 
-public abstract class Object extends Thread{
+public abstract class Object extends Thread {
 
     protected Color color;
     protected Point point;
